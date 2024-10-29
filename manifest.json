@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "Cerolingo",
+  "description": "Duolingo answer automation tool",
+  "version": "1.0",
+  "permissions": ["scripting", "activeTab", "storage", "tabs"],
+  "content_scripts": [
+    {
+      "matches": ["*://*.duolingo.com/*"],
+      "js": ["src/js/content.js"]
+    }
+  ],
+  "icons": {
+    "512": "src/img/logo.png"
+  },
+  "action": {
+    "default_popup": "src/html/popup.html",
+    "default_icon": {
+      "512": "src/img/logo.png"
+    }
+  }
+}

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Dongle:wght@300;400;700&family=Poppins:ital,wght@0,300;0,400;1,300&display=swap"
+      rel="stylesheet"
+    />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="../js/popup.js" defer></script>
+    <title>Popup</title>
+    <link rel="stylesheet" href="../css/popup.css" />
+  </head>
+  <body>
+    <h1>
+      Cerolingo
+
+      <p id="version">a</p>
+    </h1>
+    <a
+      href="https://github.com/ancym0n/Cerolingo"
+      target="_blank"
+      rel="noopener"
+      id="github"
+    >
+      <img src="../img/github-mark-white.svg" alt="" />
+      Source code & more
+    </a>
+
+    <section id="config">
+      <label for="url" id="url-label">Lesson URL</label>
+      <input
+        type="text"
+        id="url"
+        required
+        autocomplete="off"
+        spellcheck="false"
+        autocorrect="off"
+      />
+      <p id="ans">Answers</p>
+      <label for="wb">Word Bank</label>
+      <textarea
+        type="text"
+        id="wb"
+        required
+        autocomplete="off"
+        spellcheck="false"
+        autocorrect="off"
+      ></textarea>
+
+      <label for="ver">Vertical Answers</label>
+      <textarea
+        type="text"
+        id="ver"
+        required
+        autocomplete="off"
+        spellcheck="false"
+        autocorrect="off"
+      ></textarea>
+
+      <label for="hor">Horizontal Answers</label>
+      <textarea
+        type="text"
+        id="hor"
+        required
+        autocomplete="off"
+        spellcheck="false"
+        autocorrect="off"
+      ></textarea>
+
+      <label for="wc">Word Connect</label>
+      <textarea
+        type="text"
+        id="wc"
+        required
+        autocomplete="off"
+        spellcheck="false"
+        autocorrect="off"
+      ></textarea>
+    </section>
+  </body>
+</html>
