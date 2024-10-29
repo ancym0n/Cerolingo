@@ -3,7 +3,7 @@
 ![Version](https://img.shields.io/badge/Version-Beta--v0.1.0-6877ff?labelColor=e7ecff&style=flat)
 
 Duolingo answer automation tool  
-![Banner](src/img/banner.png)
+![Banner](src/img/github-banner.png)
 
 ## Upcoming changes
 
