@@ -3,7 +3,7 @@
   "name": "Cerolingo",
   "description": "Duolingo answer automation tool",
   "version": "1.0",
-  "permissions": ["scripting", "activeTab", "storage", "tabs"],
+  "permissions": ["storage"],
   "content_scripts": [
     {
       "matches": ["*://*.duolingo.com/*"],
