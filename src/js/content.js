@@ -1,275 +1,174 @@
-let storageitems = [
-  "url",
-  "wordBank",
-  "verticalAnswers",
-  "horizontalAnswers",
-  "wordConnect",
-];
-
-let targetURL;
-let wordBankAns;
-let listAnswerAns;
-let listAnswerWideAns;
-let finalWordsAns;
-
-// [ 🖱️ ] Simulates pressing numbers from 0 to 9
-function simulateKeyPress(digit) {
-  let key = digit.toString();
-  let code = `Digit${key}`;
-  let keyCode = key.charCodeAt(0);
-
-  ["keydown", "keypress", "keyup"].forEach((eventType) => {
-    let event = new KeyboardEvent(eventType, {
-      key: key,
-      code: code,
-      keyCode: keyCode,
-      which: keyCode,
-      bubbles: true,
-      cancelable: true,
-    });
-    document.dispatchEvent(event);
-  });
-}
-
-// [ 📝 ] Convert text into Cerolingo-readable arrays
-function convertToSubArrays(arr) {
-  let tempArr = [];
-  arr = arr.replace("  ", " ").replace(", ", ",").split("\n");
-  arr.forEach((e) => {
-    if (e.includes(",")) e = e.split(",");
-    tempArr.push(e);
-  });
-  return tempArr;
-}
-
-// [ ✨ ] Enhanced way to console.log
-function log(type, text) {
-  if (type === "title") {
-    console.log(
-      "%c" + text,
-      "font-size: 30px; font-weight: bold; color: #90EE90;"
-    );
-  } else if (type === 1) {
-    console.log("%c[CLingo] " + text, "font-size: 16px; color: #ddfada;");
+let checkLesson = setInterval(() => {
+  if (window.location.href.includes("/lesson")) {
+    if (document.getElementById("CEROLINGO") === null) run();
   } else {
-    console.log("%c[CLingo] " + text, "font-size: 25px; color: #ddfada;");
+    chrome.storage.sync.get(["url", "loop"], (data) => {
+      if (data.url && data.url != null && data.loop === true) {
+        console.log(data.loop);
+        window.location.href = data.url;
+      }
+    });
   }
+}, 1000);
+
+function run() {
+  const cerolingo = document.createElement("div");
+  cerolingo.id = "CEROLINGO";
+  document.body.appendChild(cerolingo);
+
+  let jsons;
+  let jsonInterval = setInterval(() => {
+    jsons = performance
+      .getEntriesByType("resource")
+      .filter((resource) =>
+        resource.name.startsWith("https://stories.duolingo.com/api2/")
+      )
+      .map((resource) => resource.name);
+    let lessonJsonURL = jsons[0];
+    if (jsons.length > 0) {
+      console.log(lessonJsonURL);
+      clearInterval(jsonInterval);
+      fetchJSON(lessonJsonURL);
+    }
+  }, 200);
+  setTimeout(() => {
+    clearInterval(jsonInterval);
+  }, 10000);
 }
 
-// [ ⏳ ] Load config from popup
-chrome.storage.sync.get(storageitems, (data) => {
-  targetURL = data.url || "";
-  wordBankAns = convertToSubArrays(data.wordBank || "");
-  listAnswerAns = convertToSubArrays(data.verticalAnswers || "");
-  listAnswerWideAns = convertToSubArrays(data.horizontalAnswers || "");
-  finalWordsAns = convertToSubArrays(data.wordConnect || "");
+async function fetchJSON(url) {
+  let cookies = document.cookie;
+  let jwtToken = cookies.match(/jwt_token=([^;]*)/)?.[1];
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${jwtToken}`,
+        "Content-Type": "application/json",
+        Cookie: cookies,
+      },
+    });
 
-  storageitems.forEach((item) => {
-    log(1, "Loaded " + item);
-  });
-
-  console.log(
-    targetURL,
-    wordBankAns,
-    listAnswerAns,
-    listAnswerWideAns,
-    finalWordsAns
-  );
-
-  log("title", "Cerolingo Loaded");
-
-  function pressStart() {
-    log(1, "Looking for 'story-start' button");
-    let startButton = document.querySelector('[data-test="story-start"]');
-    if (!startButton) setTimeout(() => pressStart(), 200);
-    else {
-      log(0, "Started lesson");
-      startButton.click();
-      duoContinue();
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
     }
-  }
 
-  function duoContinue() {
-    function duoReContinue() {
-      setTimeout(() => duoContinue(), 500);
-    }
-    let continueButton = document.querySelector(
-      '[data-test="stories-player-continue"]'
+    const data = await response.json();
+    const questionList = data.elements.filter(
+      (item) =>
+        item.type !== "LINE" &&
+        item.type !== "CHALLENGE_PROMPT" &&
+        item.type !== "HEADER"
     );
-    if (!continueButton) return false;
-    let isDisabled = continueButton.getAttributeNames().includes("disabled");
-    if (isDisabled) {
-      {
-        duoReContinue();
-        if (!wordBank(wordBankAns))
-          if (!listAnswer(listAnswerAns))
-            if (!listAnswerWide(listAnswerWideAns)) finalWords(finalWordsAns);
+    console.log(questionList);
+    let answerMP = getAnswers(questionList, "MULTIPLE_CHOICE");
+    let answerSP = getAnswers(questionList, "SELECT_PHRASE");
+    let answerPTP = getAnswers(questionList, "POINT_TO_PHRASE");
+    let answerA = getAnswers(questionList, "ARRANGE");
+    let answerM = getAnswers(questionList, "MATCH");
+
+    const storyStart = setInterval(() => {
+      const storyStartButton = document.querySelector(
+        'button[data-test="story-start"]'
+      );
+      if (storyStartButton) {
+        storyStartButton.click();
+        clearInterval(storyStart);
       }
-    } else {
-      duoReContinue();
-      setTimeout(() => {
+      setTimeout(() => clearInterval(storyStart), 10000);
+    }, 100);
+
+    const contClicker = setInterval(() => {
+      let continueButton = document.querySelector(
+        'button[data-test="stories-player-continue"]'
+      );
+      if (continueButton && !continueButton.disabled) {
         continueButton.click();
-        document.title =
-          "🔷 > " +
-          parseInt(
-            parseFloat(
-              document
-                .querySelector('[role="progressbar"]')
-                .getAttribute("aria-valuenow")
-            ) * 100
-          ) +
-          "%";
-      }, 500);
-    }
-  }
-
-  function listAnswerWide(answers) {
-    let optionButtons = document.querySelectorAll(
-      '[data-test="stories-choice"]'
-    );
-    if (!optionButtons) return false;
-    let optionNames = [];
-    for (var i = 0; i < optionButtons.length; i++) {
-      optionNames.push(optionButtons[i].innerHTML);
-    }
-    let buttonToClick;
-
-    for (var i = 0; i < answers.length; i++) {
-      if (optionNames.includes(answers[i])) {
-        buttonToClick = optionButtons[optionNames.indexOf(answers[i])];
-      }
-    }
-
-    if (buttonToClick) {
-      setTimeout(() => buttonToClick.click(), 100);
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  function wordBank(answers) {
-    let optionButtons = document.querySelector('[data-test="word-bank"]');
-    if (!optionButtons) return false;
-    let optionText = document.querySelectorAll(
-      '[data-test="challenge-tap-token-text"]'
-    );
-    let optionNames = [];
-    for (var i = 0; i < optionText.length; i++) {
-      optionNames.push(optionText[i].innerHTML);
-    }
-
-    // Checking if which answers are there
-    let similarcount = 0;
-    let foundAnswer;
-    for (var i = 0; i < answers.length; i++) {
-      let currentAnswer = answers[i];
-      for (var g = 0; g < currentAnswer.length; g++) {
-        for (var h = 0; h < optionNames.length; h++) {
-          if (currentAnswer[g] === optionNames[h]) {
-            similarcount += 1;
-            if (similarcount === optionNames.length) {
-              foundAnswer = currentAnswer;
-            }
+      } else {
+        let buttons = document.querySelectorAll(
+          'button[data-test="stories-choice"]'
+        );
+        buttons.forEach((btn) => {
+          if (answerSP.includes(btn.innerText)) btn.click();
+          else if (answerMP.includes(btn.nextElementSibling?.textContent))
+            btn.click();
+        });
+        if (buttons.length === 0) {
+          let challengeButtons = document.querySelectorAll(
+            'button[data-test*="challenge-tap-token"]'
+          );
+          if (challengeButtons.length < 8) {
+            let filled = false;
+            challengeButtons.forEach((i) => {
+              if (answerPTP.includes(i.innerText)) {
+                filled = true;
+                i.click();
+              }
+              if (
+                i === challengeButtons[challengeButtons.length - 1] &&
+                filled === false
+              ) {
+                answerA.forEach((ansA) => {
+                  ansA.forEach((a) => {
+                    challengeButtons.forEach((cbtn) => {
+                      if (cbtn.innerText === a) cbtn.click();
+                    });
+                  });
+                });
+              }
+            });
+          } else {
+            answerM.forEach((match) => {
+              challengeButtons.forEach((btn) => {
+                let btntext = btn.innerText;
+                if (match.includes(btntext)) btn.click();
+              });
+            });
           }
         }
-      }
-    }
-
-    // Clicking the answers
-    foundAnswer.forEach((name) => {
-      let indexNum = optionNames.indexOf(name);
-      optionText[indexNum].click();
-    });
-    return true;
-  }
-
-  function listAnswer(answers) {
-    let getAllLists = document.querySelectorAll("ul");
-    if (!getAllLists) return false;
-    let optionList = getAllLists[0];
-    let liTexts = optionList
-      ? Array.from(optionList.querySelectorAll("li")).map((li) => li.innerText)
-      : [];
-
-    let checkButton;
-    liTexts.forEach((ans) => {
-      if (answers.includes(ans)) {
-        let indexNum = liTexts.indexOf(ans);
-        let buttonToClick = optionList.querySelector(
-          `li:nth-child(${indexNum + 1})`
+        let endButton = document.querySelector(
+          'button[data-test="stories-player-done"]'
         );
-        buttonToClick.querySelector("button").click();
-        checkButton = buttonToClick;
+        if (endButton) {
+          clearInterval(contClicker);
+          endButton.click();
+          document.getElementById("CEROLINGO").remove();
+        }
       }
-    });
-    if (!checkButton) return false;
+    }, 100);
+    return data;
+  } catch (error) {
+    console.error("Error fetching the JSON:", error);
   }
+}
 
-  function finalWords(answers) {
-    let getAllLists = false;
-    try {
-      getAllLists = document.querySelectorAll("ul");
-    } catch {
-      return false;
-    }
-    if (!getAllLists) return false;
-    let elementList1 = getAllLists[0];
-    let elementList2 = getAllLists[1];
-
-    let textList1 = [];
-    let textList2 = [];
-
-    [textList1, textList2].forEach((list) => {
-      let temp;
-      if (list === textList1) temp = elementList1;
-      else temp = elementList2;
-      if (!temp) return false;
-      temp.querySelectorAll("li").forEach((e) => {
-        list.push(e.textContent.replace(/\d+/g, ""));
+function getAnswers(elements, type) {
+  let filteredElements = elements.filter((item) => item.type === type);
+  let answers = [];
+  filteredElements.forEach((element) => {
+    if (type === "MULTIPLE_CHOICE") {
+      answers.push(element.answers[element.correctAnswerIndex].text);
+    } else if (type === "SELECT_PHRASE") {
+      answers.push(element.answers[element.correctAnswerIndex]);
+    } else if (type === "POINT_TO_PHRASE") {
+      let selectableTranscript = element.transcriptParts.filter(
+        (item) => item.selectable === true
+      );
+      answers.push(selectableTranscript[element.correctAnswerIndex].text);
+    } else if (type === "MATCH") {
+      element.matches.forEach((m) => {
+        answers.push([m.phrase, m.translation]);
       });
-    });
-
-    let delay = 0;
-    textList1.forEach((text) => {
-      answers.forEach((ansList) => {
-        ansList.forEach((ans) => {
-          if (text.includes(ans)) {
-            delay += 1;
-            let ansListIndex = ansList.indexOf(ans);
-            let ansListOtherIndex = ansListIndex === 0 ? 1 : 0;
-            let indexOfTheOne = textList1.indexOf(ansList[ansListIndex]) + 1;
-            let indexOfTheTwo =
-              textList2.indexOf(ansList[ansListOtherIndex]) + 6;
-            if (indexOfTheTwo > 9) indexOfTheTwo = indexOfTheTwo = 0;
-            setTimeout(() => {
-              simulateKeyPress(indexOfTheOne);
-              simulateKeyPress(indexOfTheTwo);
-            }, 1 * delay);
-          }
-        });
-      });
-    });
-  }
-
-  function checkAndRedirect() {
-    if (window.location.href !== targetURL) {
-      document.title = "🔷 > Redirecting...";
-      window.location.href = targetURL;
+    } else if (type === "ARRANGE") {
+      let tempanswers = element.phraseOrder;
+      let phrases = element.selectablePhrases;
+      for (var i = 0; i < tempanswers.length; i++) {
+        tempanswers[i] = phrases[tempanswers[i]];
+      }
+      answers.push(tempanswers);
     }
-  }
-
-  checkAndRedirect();
-
-  const observer = new MutationObserver(checkAndRedirect);
-  observer.observe(document.body, { childList: true, subtree: true });
-
-  //window.onload = function () {
-  document.title = "🔷 > Loading";
-  pressStart();
-  setInterval(() => {
-    let endlesson = document.querySelector('[data-test="stories-player-done"]');
-    if (endlesson) endlesson.click();
-  }, 250);
-  //};
-});
+  });
+  console.log(answers);
+  return answers;
+}
