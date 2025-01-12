@@ -8,6 +8,7 @@ setInterval(() => {
         const containerDiv = document.createElement("div");
         containerDiv.setAttribute("id", "pointExploitContainer");
         containerDiv.style.zIndex = "1000";
+        containerDiv.style.userSelect = "none";
         containerDiv.style.height = "230px";
         containerDiv.style.width = "200px";
         containerDiv.style.position = "fixed";
