@@ -62,6 +62,7 @@ setInterval(() => {
         containerDiv.appendChild(loopCount);
         document.body.appendChild(containerDiv);
 
+        // Draggable menu
         const draggable = document.getElementById("pointExploitContainer");
         let isDragging = false;
         let offsetX = 0;
@@ -71,6 +72,14 @@ setInterval(() => {
           isDragging = true;
           offsetX = event.clientX - draggable.offsetLeft;
           offsetY = event.clientY - draggable.offsetTop;
+          draggable.style.cursor = "grabbing";
+        });
+
+        draggable.addEventListener("touchstart", (event) => {
+          isDragging = true;
+          const touch = event.touches[0];
+          offsetX = touch.clientX - draggable.offsetLeft;
+          offsetY = touch.clientY - draggable.offsetTop;
           draggable.style.cursor = "grabbing";
         });
 
@@ -92,7 +101,31 @@ setInterval(() => {
           }
         });
 
+        document.addEventListener("touchmove", (event) => {
+          if (isDragging) {
+            const touch = event.touches[0];
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            const elementWidth = draggable.offsetWidth;
+            const elementHeight = draggable.offsetHeight;
+
+            let x = touch.clientX - offsetX;
+            let y = touch.clientY - offsetY;
+
+            x = Math.max(0, Math.min(x, viewportWidth - elementWidth));
+            y = Math.max(0, Math.min(y, viewportHeight - elementHeight));
+
+            draggable.style.left = `${x}px`;
+            draggable.style.top = `${y}px`;
+          }
+        });
+
         document.addEventListener("mouseup", () => {
+          isDragging = false;
+          draggable.style.cursor = "grab";
+        });
+
+        document.addEventListener("touchend", () => {
           isDragging = false;
           draggable.style.cursor = "grab";
         });
@@ -112,6 +145,7 @@ setInterval(() => {
           draggable.style.left = `${x}px`;
           draggable.style.top = `${y}px`;
         });
+        // =======================================================
       }
     });
   }
