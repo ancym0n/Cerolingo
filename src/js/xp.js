@@ -7,6 +7,9 @@ setInterval(() => {
       if (data.storyId && !window.location.href.includes("/lesson")) {
         const containerDiv = document.createElement("div");
         containerDiv.setAttribute("id", "pointExploitContainer");
+        containerDiv.style.zIndex = "1000";
+        containerDiv.style.height = "230px";
+        containerDiv.style.width = "200px";
         containerDiv.style.position = "fixed";
         containerDiv.style.bottom = "20px";
         containerDiv.style.right = "20px";
@@ -58,6 +61,57 @@ setInterval(() => {
         containerDiv.appendChild(loopPoints);
         containerDiv.appendChild(loopCount);
         document.body.appendChild(containerDiv);
+
+        const draggable = document.getElementById("pointExploitContainer");
+        let isDragging = false;
+        let offsetX = 0;
+        let offsetY = 0;
+
+        draggable.addEventListener("mousedown", (event) => {
+          isDragging = true;
+          offsetX = event.clientX - draggable.offsetLeft;
+          offsetY = event.clientY - draggable.offsetTop;
+          draggable.style.cursor = "grabbing";
+        });
+
+        document.addEventListener("mousemove", (event) => {
+          if (isDragging) {
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            const elementWidth = draggable.offsetWidth;
+            const elementHeight = draggable.offsetHeight;
+
+            let x = event.clientX - offsetX;
+            let y = event.clientY - offsetY;
+
+            x = Math.max(0, Math.min(x, viewportWidth - elementWidth));
+            y = Math.max(0, Math.min(y, viewportHeight - elementHeight));
+
+            draggable.style.left = `${x}px`;
+            draggable.style.top = `${y}px`;
+          }
+        });
+
+        document.addEventListener("mouseup", () => {
+          isDragging = false;
+          draggable.style.cursor = "grab";
+        });
+
+        window.addEventListener("resize", () => {
+          const viewportWidth = window.innerWidth;
+          const viewportHeight = window.innerHeight;
+          const elementWidth = draggable.offsetWidth;
+          const elementHeight = draggable.offsetHeight;
+
+          let x = parseInt(draggable.style.left, 10) || 0;
+          let y = parseInt(draggable.style.top, 10) || 0;
+
+          x = Math.max(0, Math.min(x, viewportWidth - elementWidth));
+          y = Math.max(0, Math.min(y, viewportHeight - elementHeight));
+
+          draggable.style.left = `${x}px`;
+          draggable.style.top = `${y}px`;
+        });
       }
     });
   }

@@ -1,6 +1,6 @@
 # Cerolingo
 
-![Version](https://img.shields.io/badge/Version-v2.0-6877ff?labelColor=e7ecff&style=flat)
+![Version](https://img.shields.io/badge/Version-v2.2-6877ff?labelColor=e7ecff&style=flat)
 
 Duolingo answer automation tool  
 ![Banner](src/img/github-banner.png)
