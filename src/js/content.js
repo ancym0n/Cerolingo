@@ -5,11 +5,29 @@ let checkLesson = setInterval(() => {
     chrome.storage.sync.get(["url", "loop"], (data) => {
       if (data.url && data.url != null && data.loop === true) {
         console.log(data.loop);
-        window.location.href = data.url;
+        window.location.href = data.url.replace("level", "legendary");
       }
     });
   }
 }, 1000);
+
+document.addEventListener("click", (event) => {
+  if (
+    !document.getElementById("legendaryBypass") &&
+    !window.location.href.includes("/lesson")
+  ) {
+    let practiceButton = document.querySelector(
+      'a[data-test*="skill-path-state-legendary"]'
+    );
+    let legendaryBypass = practiceButton.cloneNode(true);
+    legendaryBypass.innerText = "Legendary Bypass +<40px";
+    let currentHref = legendaryBypass.getAttribute("href");
+    let updatedHref = currentHref.replace("level", "legendary");
+    legendaryBypass.setAttribute("href", updatedHref);
+    legendaryBypass.setAttribute("id", "legendaryBypass");
+    practiceButton.parentNode.appendChild(legendaryBypass);
+  }
+});
 
 function run() {
   const cerolingo = document.createElement("div");
@@ -26,6 +44,10 @@ function run() {
       .map((resource) => resource.name);
     let lessonJsonURL = jsons[0];
     if (jsons.length > 0) {
+      let linkToSave = jsons[0].split("?")[0];
+      chrome.storage.sync.set({ storyId: linkToSave }, () => {
+        console.log("Story ID saved to storage:", linkToSave);
+      });
       console.log(lessonJsonURL);
       clearInterval(jsonInterval);
       fetchJSON(lessonJsonURL);
@@ -121,7 +143,7 @@ async function fetchJSON(url) {
           } else {
             answerM.forEach((match) => {
               challengeButtons.forEach((btn) => {
-                let btntext = btn.innerText;
+                let btntext = btn.innerText.replace(/[\d\n]/g, "");
                 if (match.includes(btntext)) btn.click();
               });
             });

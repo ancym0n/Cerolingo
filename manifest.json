@@ -2,12 +2,12 @@
   "manifest_version": 3,
   "name": "Cerolingo",
   "description": "Duolingo answer automation tool",
-  "version": "2.0",
+  "version": "2.1",
   "permissions": ["storage"],
   "content_scripts": [
     {
       "matches": ["*://*.duolingo.com/*"],
-      "js": ["src/js/content.js"],
+      "js": ["src/js/content.js", "src/js/xp.js"],
       "css": ["src/css/style.css"]
     }
   ],
