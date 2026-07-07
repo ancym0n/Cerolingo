@@ -1,0 +1,108 @@
+* {
+  --background-color: #7b93ff;
+  --dark-main-color: #6877fe;
+  --main-color: #a1b2ff;
+  --light-main-color: #b3d0ff;
+  --title-color: #e7ecff;
+  --alt-main-color: #7385fa;
+}
+
+button[aria-label="Story"]:has(img[src*=".svg"]) {
+  scale: 1.2;
+}
+
+/* Doesn't affect disabled or undone story lessons */
+button[aria-label="Story"]:has(svg):has(img[src*=".svg"]):not(
+    :has(img[src*="3ea75bf2164eed9218a7163be002af82.svg"])
+  ) {
+  --path-level-color: var(--dark-main-color) !important;
+}
+
+button[aria-label="Story"]:has(svg):has(img[src*=".svg"]):not(
+    :has(img[src*="3ea75bf2164eed9218a7163be002af82.svg"])
+  )::after {
+  box-shadow:
+    0 8px 0 rgb(var(--color-black), 0.2),
+    0 8px 0 var(--path-level-color) !important;
+}
+
+button[aria-label="Story"] svg {
+  color: var(--alt-main-color) !important;
+}
+
+#legendaryBypass {
+  --web-ui_button-background-color: var(--dark-main-color) !important;
+  --web-ui_button-border-color: var(--dark-main-color) !important;
+  --web-ui_button-color: var(--light-main-color) !important;
+  --web-ui_button-color-disabled: var(--dark-main-color) !important;
+  --web-ui_button-filter-hover: none !important;
+}
+
+#legendaryBypass::before {
+  background:
+    linear-gradient(
+      136deg,
+      transparent 10%,
+      var(--background-color) 10%,
+      var(--background-color) 40%,
+      /* rgb(var(--alt-main-color-rgb-value), 0.5) 10%,
+      rgb(var(--alt-main-color-rgb-value), 0.5) 40%, */
+      transparent 40%,
+      transparent 53%,
+      var(--background-color) 53%,
+      var(--background-color) 71%,
+      /* rgb(var(--alt-main-color-rgb-value), 0.5) 53%,
+      rgb(var(--alt-main-color-rgb-value), 0.5) 71%, */
+      transparent 71%
+    ),
+    var(--alt-main-color) !important;
+}
+
+/* Point Exploit */
+#pointExploitContainer {
+  z-index: 1000;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: none; /* CRITICAL: Prevents mobile page scrolling while dragging */
+  height: 230px;
+  width: 200px;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 10px;
+  background-color: #131f24;
+  border: 2.5px solid #37464f;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  font-family: sans-serif;
+}
+
+#pointExploitContainer p {
+  text-align: center;
+  color: #f0f0f0;
+  margin: 10px 0;
+}
+
+#pointExploitContainer #loopCount {
+  font-size: 12px;
+  margin: 5px 0 0 0;
+  text-align: center;
+}
+
+#pointExploitContainer button {
+  display: block;
+  border: 2px solid #37464f;
+  border-radius: 14px;
+  background: #42aadc;
+  color: #f0f0f0;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.2s ease;
+}
+
+#pointExploitContainer #loopPoints {
+  margin-top: 5px;
+}

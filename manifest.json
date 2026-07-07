@@ -1,0 +1,35 @@
+{
+  "manifest_version": 3,
+  "name": "Cerolingo",
+  "author": "ancym0n",
+  "description": "Duolingo answer automation tool",
+  "version": "2.2",
+  "permissions": ["storage"],
+  "content_scripts": [
+    {
+      "matches": ["*://*.duolingo.com/*"],
+      "js": [
+        "src/js/main.js",
+        "src/js/auto-answer.js",
+        "src/js/legendary-bypass.js",
+        "src/js/xp-exploit.js"
+      ],
+      "css": ["src/css/style.css"]
+    },
+    {
+      "matches": ["*://*.duolingo.com/lesson/*"],
+      "js": ["src/js/audio-block.js"],
+      "run_at": "document_start",
+      "world": "MAIN"
+    }
+  ],
+  "icons": {
+    "512": "src/img/logo.png"
+  },
+  "action": {
+    "default_popup": "src/html/popup.html",
+    "default_icon": {
+      "512": "src/img/logo.png"
+    }
+  }
+}
