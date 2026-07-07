@@ -7,16 +7,19 @@
     <link rel="stylesheet" href="../src/css/resize.css" />
     <link rel="stylesheet" href="../src/css/content.css" />
     <link rel="stylesheet" href="../src/css/hover.css" />
-    <link rel="stylesheet" href="../src/css/faq.css" />
+    <link rel="stylesheet" href="../src/css/privacy.css" />
+    <link rel="stylesheet" href="../src/css/banner.css" />
     <link
       rel="shortcut icon"
-      href="src/img/cerolingobm-logo.png"
+      href="../src/img/cerolingo-logo.png"
       type="image/x-icon"
     />
-    <title>CerolingoBM</title>
+    <title>Cerolingo</title>
   </head>
   <body>
-    <img src="src/img/cerolingo-title.png" alt="" />
+    <section id="banner">
+      <img src="../src/img/cerolingo-title.png" alt="" />
+    </section>
     <section id="content">
       <h1>Download now!</h1>
       <a href="https://github.com/ancym0n/Cerolingo/releases"
@@ -24,33 +27,74 @@
       >
       <a href="https://github.com/ancym0n/Cerolingo">Source Code</a>
     </section>
-    <section id="faq">
-      <h1>FAQ</h1>
-      <div>
-        <h2>1. What is CerolingoBM?</h2>
-        <p>
-          CerolingoBM stands for <em>Cerolingo Bot Manager</em>. It is a tool
-          designed to automate the process of creating Duolingo accounts and
-          managing them, such as completing lessons and accumulating XP.
-        </p>
-      </div>
-      <div>
-        <h2>2. What are its main features?</h2>
+    <section id="privacy">
+      <h1>Privacy Policy</h1>
 
+      <div>
+        <h2>1. Overview of Data Practices</h2>
         <p>
-          CerolingoBM can create and manage multiple Duolingo accounts. It also
-          allows you to automatically maintain streaks or work your way up the
-          leaderboards. Additionally, the tool can be customized to match
-          personal preferences.
+          Cerolingo is committed to maintaining absolute user privacy. The
+          extension functions strictly as a client-side automation utility. It
+          does not harvest, intercept, track, or extract any user personal data,
+          account credentials, browsing histories, or network metrics for remote
+          collection.
         </p>
       </div>
 
       <div>
-        <h2>3. Which operating systems are supported?</h2>
+        <h2>2. Local Storage & Scope of Execution</h2>
         <p>
-          CerolingoBM is currently developed for Windows due to its reliance on
-          running .exe files. Support for other operating systems may be added
-          in the future, but there is no set timeline.
+          The extension requests browser profile storage privileges
+          (<i>chrome.storage.sync</i>) solely to preserve configuration states
+          locally (such as automated navigation parameters and temporary session
+          IDs). All calculations, DOM reading, and session parameters run fully
+          isolated within your web browser's environment.
+        </p>
+      </div>
+
+      <div>
+        <h2>3. Third-Party Interactions</h2>
+        <p>
+          Cerolingo communicates directly and exclusively with Duolingo
+          infrastructure endpoints to facilitate automated lesson resolution. It
+          features zero integration with third-party analytical dashboards,
+          tracking networks, advertising tools, or external telemetry cloud
+          servers.
+        </p>
+      </div>
+
+      <div>
+        <h2>4. Core Compliance Declarations</h2>
+        <p>
+          Pursuant to global developer guidelines and web store transparency
+          standards, we explicitly confirm:
+        </p>
+        <ul>
+          <li>
+            <strong>No Data Exploitation:</strong> User information or
+            structural data is never sold, traded, rented, or transferred to
+            third-party entities under any circumstances.
+          </li>
+          <li>
+            <strong>Strict Contextual Use:</strong> No permissions or processed
+            parameters are utilized outside the extension's explicit functional
+            scope.
+          </li>
+          <li>
+            <strong>No Credit or Analytical Tracking:</strong> Collected
+            automation loops are never deployed to evaluate financial status,
+            profile behavior, or establish user creditworthiness.
+          </li>
+        </ul>
+      </div>
+
+      <div>
+        <h2>5. Changes to This Policy</h2>
+        <p>
+          As Cerolingo functions strictly local to your machine, updates to this
+          privacy policy will coincide with public extension version releases.
+          Continued use of the extension following an update constitutes
+          acceptance of any minor maintenance adjustments to these terms.
         </p>
       </div>
     </section>

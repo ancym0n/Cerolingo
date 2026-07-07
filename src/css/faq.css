@@ -28,3 +28,13 @@
   text-align: center;
   width: 80%;
 }
+
+:has(a[href="privacy"]) {
+  display: grid;
+  justify-items: center;
+}
+
+a[href="privacy"] {
+  display: block;
+  max-width: 20rem;
+}
