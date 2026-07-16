@@ -7,7 +7,6 @@ const loadThreshold = 2000;
 setInterval(() => {
   if (!document.getElementById(modMenuId)) {
     chrome.storage.local.get(["storyId", "currentView"], (data) => {
-      //if (data.storyId && !window.location.href.includes("/lesson")) {
 
       const bodyStyle = window.getComputedStyle(document.body);
 
@@ -36,30 +35,11 @@ setInterval(() => {
       const menuContent = document.createElement("div");
       menuContent.id = modMenuId + "Content";
 
-      // const text = document.createElement("p");
-      // text.innerText = "Point exploit\n+90 XP";
-
-      // const loopCount = document.createElement("p");
-      // loopCount.setAttribute("id", "loopCount");
-      // loopCount.innerText = "Loop count: 0";
-
-      // const button = document.createElement("button");
-      // button.textContent = "Give points";
-      // button.addEventListener("click", givePoint);
-
-      // const loopPoints = document.createElement("button");
-      // loopPoints.setAttribute("id", "loopPoints");
-      // loopPoints.textContent = "Start loop";
-      // loopPoints.addEventListener("click", loopPointExploit);
-
       titleBar.appendChild(titleBarImg);
       containerDiv.appendChild(version);
       containerDiv.appendChild(titleBar);
       containerDiv.appendChild(menuContent);
-      // containerDiv.appendChild(text);
-      // containerDiv.appendChild(button);
-      // containerDiv.appendChild(loopPoints);
-      // containerDiv.appendChild(loopCount);
+
       document.body.appendChild(containerDiv);
 
       console.log("Data", data);
@@ -275,9 +255,7 @@ async function loadView(id) {
 
     if (transitionDiv) {
       menuContent.replaceChildren(transitionDiv);
-    } // else {
-    //   menuContent.innerHTML = "";
-    // }
+    } 
     elements.forEach((e) => {
       menuContent.appendChild(e);
     });

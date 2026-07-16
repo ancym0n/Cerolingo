@@ -1,21 +1,31 @@
 # Cerolingo
 
 ![Version](https://img.shields.io/badge/Version-v3.0.0-6877ff?labelColor=e7ecff&style=flat)
+[![Chrome Web Store](https://img.shields.io/badge/Chrome_Web_Store-Download-4285F4?logo=google-chrome&logoColor=white)](https://chromewebstore.google.com/detail/apgkphplddmjkoogmoijendkdjaaeiii)
+[![Firefox Add-ons](https://img.shields.io/badge/Firefox_Add--ons-Download-4285F4?logo=firefox-browser&logoColor=white)](https://addons.mozilla.org/firefox/addon/cerolingo/)
+[![Website](https://img.shields.io/badge/Website-ancymon.dev-6877ff?labelColor=e7ecff&logo=globe&logoColor=white)](https://ancymon.dev/Cerolingo/)
 
-Duolingo answer automation tool  
+Duolingo answer automation tool ⚡  
 ![Banner](src/img/github-banner.png)
 
-## Features
+## ✨ Features
 
-- Story Lesson Highlighter
-- Point Exploit - Get Points Without Completing Lessons
-- Auto Answer Bot - Exclusive to Story Lessons
+- 🤖 **Auto Answer Bot:** Exclusive auto-answering built for Story Lessons.
+- ⚡ **Point Exploit:** Gain points without having to complete lessons.
+- 👑 **Legendary Bypass:** Works reliably on every level, anytime.
+- 🔇 **Audio Blocking:** Instantly rejects audio playback requests so Duolingo skips talking lines and flies through story lessons fast.
+- 🎛️ **All-in-One Mod Menu:** Control the extension, toggle modules, and change settings directly from the page.
+- 🗺️ **Story Map Highlighting:** Auto-detects and custom-styles story nodes on your learning map with the Cerolingo theme.
+- 📱 **Cross-Platform:** Full support for Chrome, desktop Firefox, and Firefox for Android mobile!
+- 🌐 **Global Support:** Works seamlessly on both `duolingo.com` and `duolingo.cn`.
 
-## Point exploit
+## 🎛️ Mod Menu
 
-If you don’t see a small panel at the bottom left of your screen in Duolingo’s lobby (https://duolingo.com), complete one story lesson, and it should appear.
+Cerolingo features an in-page mod menu redesigned with a unified dark theme overlaying directly on Duolingo. You can manage settings, toggle modules, and control the extension on the fly without ever opening your browser's extension popup.
 
-## Upcoming changes
+- 👁️ **Hideable:** Double-click the title bar anytime to minimize or toggle the menu out of your way.
+- 📲 **Mobile Friendly:** Smooth drag controls tailored for phone browsers, with page scrolling automatically disabled while dragging to prevent lag.
 
-- Chrome Webstore integration
-- Duolingo.com Tweaks 🤫
+## 🔮 Upcoming Changes
+
+- 🤫 Other Duolingo tweaks
