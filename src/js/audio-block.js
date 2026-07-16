@@ -5,16 +5,22 @@ function cLog(title, text) {
     "background: #b3d0ff; color: #454faa; border-radius: 0 4px 4px 0;",
   );
 }
-window.HTMLAudioElement.prototype.play = function () {
-  cLog("bypass", "HTML5 Audio auto-blocked");
 
-  return;
-};
+const doAudioBlock =
+  localStorage.getItem("audioBlock") === "false" ? false : true;
 
-if (window.AudioContext) {
-  window.AudioContext.prototype.resume = function () {
-    cLog("bypass", "AudioContext auto-blocked");
+if (doAudioBlock) {
+  window.HTMLAudioElement.prototype.play = function () {
+    cLog("bypass", "HTML5 Audio auto-blocked");
 
     return;
   };
+
+  if (window.AudioContext) {
+    window.AudioContext.prototype.resume = function () {
+      cLog("bypass", "AudioContext auto-blocked");
+
+      return;
+    };
+  }
 }

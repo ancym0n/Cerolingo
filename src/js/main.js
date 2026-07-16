@@ -1,3 +1,14 @@
+const settingsCheck = ["audioBlock", "storyHighlight", "legendaryBypass"];
+chrome.storage.local.get(settingsCheck, (data) => {
+  console.log(data);
+  settingsCheck.forEach((stng) => {
+    if (!data[stng] && data[stng] != false) {
+      if (stng === "audioBlock") localStorage.setItem("audioBlock", "true");
+      chrome.storage.local.set({ [stng]: true });
+    }
+  });
+});
+
 function loadedLog(filename) {
   console.log(
     `%c ${filename}.js %c loaded `,
@@ -8,13 +19,22 @@ function loadedLog(filename) {
 
 loadedLog("main");
 
-let checkLesson = setInterval(() => {
-  if (window.location.href.includes("/lesson")) {
+// Story lesson loop
+const checkLesson = setInterval(() => {
+  if (
+    window.location.href.includes("/lesson") ||
+    window.location.href.includes("/stories")
+  ) {
     if (document.getElementById("CEROLINGO") === null) run();
   } else {
-    chrome.storage.sync.get(["url", "loop"], (data) => {
-      if (data.url && data.url != null && data.loop === true) {
-        console.log(data.loop);
+    chrome.storage.local.get(["url", "loop"], (data) => {
+      if (
+        data.url &&
+        data.url.includes("/lesson/") &&
+        data.url != null &&
+        data.loop === true
+      ) {
+        //console.log(data.loop);
         window.location.href = data.url.replace("level", "legendary");
       }
     });
@@ -34,11 +54,12 @@ function run() {
         resource.name.startsWith("https://stories.duolingo.com/api2/"),
       )
       .map((resource) => resource.name);
-    let lessonJsonURL = jsons[0];
+    const lessonJsonURL = jsons[0];
     if (jsons.length > 0) {
-      let linkToSave = jsons[0].split("?")[0];
-      chrome.storage.sync.set({ storyId: linkToSave }, () => {
-        console.log("Story ID saved to storage:", linkToSave);
+      const linkToSave = jsons[0].split("?")[0];
+      const lessonURL = window.location.href;
+      chrome.storage.local.set({ storyId: linkToSave, url: lessonURL }, () => {
+        console.log("Story ID saved to storage:", linkToSave, lessonURL);
       });
       console.log(lessonJsonURL);
       clearInterval(jsonInterval);

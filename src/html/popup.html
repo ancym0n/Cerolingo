@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -10,15 +10,22 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="../js/popup.js" defer></script>
-    <title>Popup</title>
+    <title>Cerolingo > Popup</title>
     <link rel="stylesheet" href="../css/popup.css" />
   </head>
   <body>
-    <h1>
-      Cerolingo
-
+    <a href="https://ancymon.dev/Cerolingo" id="title">
+      <img id="logo" src="../img/cerolingo-title.svg" alt="Cerolingo">
       <p id="version">a</p>
-    </h1>
+    </img>
+    </a>
+
+    <div class="extension-links">
+      <a href="https://chromewebstore.google.com/detail/apgkphplddmjkoogmoijendkdjaaeiii?utm_source=item-share-cb" class="web-extension">Chrome Web Store</a>
+  
+      <a href="https://addons.mozilla.org/firefox/addon/cerolingo/" class="web-extension">Firefox Add-ons</a>
+    </div>
+
     <a
       href="https://github.com/ancym0n/Cerolingo"
       target="_blank"
@@ -26,24 +33,7 @@
       id="github"
     >
       <img src="../img/github-mark-white.svg" alt="" />
-      Source code & more
+      Source code
     </a>
-
-    <section id="config">
-      <label for="url" id="url-label">Lesson URL (Story)</label>
-      <input
-        type="text"
-        id="url"
-        required
-        autocomplete="off"
-        spellcheck="false"
-        autocorrect="off"
-      />
-      <label for="loopCheckbox" class="checkboxItem">
-        Loop
-
-        <input type="checkbox" id="loopCheckbox" />
-      </label>
-    </section>
   </body>
 </html>

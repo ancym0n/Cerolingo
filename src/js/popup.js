@@ -6,16 +6,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const manifestData = chrome.runtime.getManifest();
   versionElement.textContent = `v${manifestData.version}`;
 
-  chrome.storage.sync.get(["url", "loop"], (data) => {
-    if (data.url) urlInput.value = data.url; 
-    if (data.loop !== undefined) loopCheckbox.checked = data.loop; 
+  chrome.storage.local.get(["url", "loop"], (data) => {
+    if (data.url) urlInput.value = data.url;
+    if (data.loop !== undefined) loopCheckbox.checked = data.loop;
   });
 
   urlInput.addEventListener("input", () => {
-    chrome.storage.sync.set({ url: urlInput.value });
+    chrome.storage.local.set({ url: urlInput.value });
   });
 
   loopCheckbox.addEventListener("change", () => {
-    chrome.storage.sync.set({ loop: loopCheckbox.checked });
+    chrome.storage.local.set({ loop: loopCheckbox.checked });
   });
 });

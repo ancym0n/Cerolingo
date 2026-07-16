@@ -5,29 +5,11 @@
   --light-main-color: #b3d0ff;
   --title-color: #e7ecff;
   --alt-main-color: #7385fa;
-}
 
-button[aria-label="Story"]:has(img[src*=".svg"]) {
-  scale: 1.2;
-}
-
-/* Doesn't affect disabled or undone story lessons */
-button[aria-label="Story"]:has(svg):has(img[src*=".svg"]):not(
-    :has(img[src*="3ea75bf2164eed9218a7163be002af82.svg"])
-  ) {
-  --path-level-color: var(--dark-main-color) !important;
-}
-
-button[aria-label="Story"]:has(svg):has(img[src*=".svg"]):not(
-    :has(img[src*="3ea75bf2164eed9218a7163be002af82.svg"])
-  )::after {
-  box-shadow:
-    0 8px 0 rgb(var(--color-black), 0.2),
-    0 8px 0 var(--path-level-color) !important;
-}
-
-button[aria-label="Story"] svg {
-  color: var(--alt-main-color) !important;
+  --green-color: #7bffd0;
+  --dark-green-color: #5fc18c;
+  --red-color: #ff8585;
+  --dark-red-color: #c95353;
 }
 
 #legendaryBypass {
@@ -58,20 +40,22 @@ button[aria-label="Story"] svg {
     var(--alt-main-color) !important;
 }
 
-/* Point Exploit */
-#pointExploitContainer {
+/* Mod menu */
+#cerolingoModMenu {
+  transition: height 0.3s;
+  overflow: hidden;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
   z-index: 1000;
   -webkit-user-select: none;
   user-select: none;
-  touch-action: none; /* CRITICAL: Prevents mobile page scrolling while dragging */
-  height: 230px;
+  touch-action: none;
+  height: 260px;
   width: 200px;
   position: fixed;
   bottom: 20px;
   right: 20px;
-  padding: 10px;
-  background-color: #131f24;
-  border: 2.5px solid #37464f;
   border-radius: 16px;
   display: flex;
   flex-direction: column;
@@ -79,30 +63,173 @@ button[aria-label="Story"] svg {
   font-family: sans-serif;
 }
 
-#pointExploitContainer p {
-  text-align: center;
-  color: #f0f0f0;
-  margin: 10px 0;
+#cerolingoModMenu * {
+  transition: all 0.3s;
 }
 
-#pointExploitContainer #loopCount {
-  font-size: 12px;
-  margin: 5px 0 0 0;
-  text-align: center;
+#cerolingoModMenuVersion {
+  color: var(--dark-main-color);
+  position: absolute;
+  font-size: 0.9rem;
+  right: 0.6rem;
+  bottom: 0.2rem;
+  margin: 0;
+  z-index: 100;
 }
 
-#pointExploitContainer button {
-  display: block;
-  border: 2px solid #37464f;
+#cerolingoModMenuContent {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  padding: 0.4rem 0.3rem 1.8rem 0.3rem;
+}
+
+#cerolingoModMenu,
+#cerolingoModMenu button,
+#cerolingoModMenu input,
+#cerolingoModMenuTitleBar {
+  border-width: 2px;
+  border-style: solid;
+  border-color: var(--dark-main-color);
+}
+
+#cerolingoModMenuTitleBar,
+#cerolingoModMenuTitleBar img {
+  z-index: 100;
+  position: relative;
+
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+
+  -moz-user-drag: none !important;
+  -webkit-user-drag: none !important;
+}
+
+#cerolingoModMenuTitleBar {
+  display: grid;
+  justify-items: center;
   border-radius: 14px;
-  background: #42aadc;
-  color: #f0f0f0;
-  padding: 10px 20px;
+}
+
+#cerolingoModMenuTitleBar img {
+  width: 9rem;
+  padding: 0.1rem 0;
+}
+
+#cerolingoModMenu button,
+#cerolingoModMenu input {
+  color: var(--light-main-color);
+  transition: all 0.3s;
+  position: relative;
+  display: block;
+  margin: 0.5rem 0;
+  font-weight: normal;
+  border-radius: 14px;
   cursor: pointer;
   font-weight: bold;
-  transition: background 0.2s ease;
 }
 
-#pointExploitContainer #loopPoints {
-  margin-top: 5px;
+#cerolingoModMenu button,
+#cerolingoModMenu input,
+#cerolingoModMenuTitleBar {
+  background-color: var(--background-color);
+  box-shadow: 0px 0.5rem 0px 0px var(--dark-main-color);
+}
+
+.cerolingoMinimized {
+  height: 3rem !important;
+}
+
+.cerolingoMinimized button,
+.cerolingoMinimized input,
+.cerolingoMinimized p {
+  transition: all 0.15s !important;
+  opacity: 0 !important;
+}
+
+#cerolingoModMenu button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0px calc(0.5rem + 3px) 0px 0px var(--dark-main-color);
+}
+
+#cerolingoModMenuTransition {
+  transition: all 0.3s;
+  top: 0;
+  left: 0;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 99;
+}
+
+#cerolingoModMenuBackButton {
+  background: none !important;
+  position: absolute !important;
+  box-shadow: none !important;
+  bottom: -0.4rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40%;
+  color: var(--dark-main-color) !important;
+  opacity: 0.7;
+}
+
+#cerolingoModMenuBackButton:hover {
+  transform: translateX(-50%) !important;
+  width: 50%;
+  opacity: 1;
+}
+
+#cerolingoModMenu button[toggle="true"] {
+  background-color: var(--green-color) !important;
+  border-color: var(--dark-green-color) !important;
+  box-shadow: 0px 0.5rem 0px 0px var(--dark-green-color) !important;
+  color: var(--dark-green-color) !important;
+}
+#cerolingoModMenu button[toggle="false"],
+#cerolingoModMenu button[running="true"] {
+  background-color: var(--red-color) !important;
+  border-color: var(--dark-red-color) !important;
+  box-shadow: 0px 0.5rem 0px 0px var(--dark-red-color) !important;
+  color: var(--dark-red-color) !important;
+}
+
+#cerolingoModMenu button[toggle="true"]:hover {
+  box-shadow: 0px calc(0.5rem + 3px) 0px 0px var(--dark-green-color) !important;
+}
+#cerolingoModMenu button[toggle="false"]:hover,
+#cerolingoModMenu button[running="true"]:hover {
+  box-shadow: 0px calc(0.5rem + 3px) 0px 0px var(--dark-red-color) !important;
+}
+
+#cerolingoModMenu input {
+  background: none;
+  width: 100%;
+  padding: 0;
+  text-align: center;
+}
+
+.cerolingoButtonClicked {
+  transform: translateY(0) !important;
+  box-shadow: 0px 0.5rem 0px 0px var(--dark-main-color) !important;
+}
+
+.cerolingoButtonClicked[running="true"] {
+  box-shadow: 0px 0.5rem 0px 0px var(--dark-red-color) !important;
+}
+
+#cerolingoModMenuLoopCount {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.8rem;
+  width: 80%;
+}
+
+#cerolingoModMenuActivationInfo {
+  padding: 1rem 0;
+  text-align: center;
+  color: var(--dark-red-color);
 }
