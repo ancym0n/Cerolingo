@@ -3,7 +3,7 @@
   "name": "Cerolingo",
   "author": "ancym0n",
   "description": "Duolingo answer automation extension",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "browser_specific_settings": {
     "gecko": {
       "id": "cerolingo@ancymon.dev",
@@ -17,39 +17,39 @@
     {
       "matches": ["*://*.duolingo.com/*", "*://*.duolingo.cn/*"],
       "js": [
-        "src/js/main.js",
-        "src/js/auto-answer.js",
-        "src/js/legendary-bypass.js",
-        "src/js/xp-exploit.js",
-        "src/js/mod-menu.js",
-        "src/js/story-highlight.js"
+        "src/content/main.js",
+        "src/content/solver.js",
+        "src/content/bypass.js",
+        "src/content/xp.js",
+        "src/content/menu.js",
+        "src/content/highlight.js"
       ],
-      "css": ["src/css/style.css"]
+      "css": ["src/styles/content.css"]
     },
     {
-      "matches": [
-        "*://*.duolingo.com/lesson/*",
-        "*://*.duolingo.com/story/*",
-        "*://*.duolingo.cn/lesson/*",
-        "*://*.duolingo.cn/story/*"
-      ],
-      "js": ["src/js/audio-block.js"],
+      "matches": ["*://*.duolingo.com/*", "*://*.duolingo.cn/*"],
+      "js": ["src/content/challenges.js"],
+      "world": "MAIN"
+    },
+    {
+      "matches": ["*://*.duolingo.com/*", "*://*.duolingo.cn/*"],
+      "js": ["src/content/audio.js"],
       "run_at": "document_start",
       "world": "MAIN"
     }
   ],
   "icons": {
-    "512": "src/img/logo.png"
+    "512": "assets/icon.png"
   },
   "action": {
-    "default_popup": "src/html/popup.html",
+    "default_popup": "src/popup/popup.html",
     "default_icon": {
-      "512": "src/img/logo.png"
+      "512": "assets/icon.png"
     }
   },
   "web_accessible_resources": [
     {
-      "resources": ["src/img/cerolingo-title.svg"],
+      "resources": ["assets/title.svg"],
       "matches": ["*://*.duolingo.com/*", "*://*.duolingo.cn/*"]
     }
   ]
