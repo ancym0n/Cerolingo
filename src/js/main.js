@@ -541,8 +541,25 @@ async function hideLoader() {
   loader.remove();
 }
 
+function setupScrollCue() {
+  const cueWrap = document.getElementById("scroll-cue-wrap");
+  const faq = document.getElementById("faq");
+  if (!cueWrap || !faq) return;
+
+  const update = () => {
+    const faqTop = faq.getBoundingClientRect().top;
+    const isFaqVisible = faqTop <= window.innerHeight - 36;
+    cueWrap.classList.toggle("is-hidden", isFaqVisible);
+  };
+
+  window.addEventListener("scroll", update, { passive: true });
+  window.addEventListener("resize", update, { passive: true });
+  update();
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   setLoaderProgress(0.12);
+  setupScrollCue();
 
   const pageLoaded = new Promise((resolve) => {
     if (document.readyState === "complete") resolve();
