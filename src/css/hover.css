@@ -34,6 +34,20 @@ a.stat-item:active {
   color: var(--title-color);
 }
 
+#scroll-cue:hover {
+  background-color: #1f323b;
+  color: var(--title-color);
+  transform: none;
+  translate: 0 -2px;
+  box-shadow: 0 calc(0.34rem + 2px) 0 0 var(--dark-main-color);
+}
+
+#scroll-cue:active {
+  transform: none;
+  translate: 0 2px;
+  box-shadow: 0 0.14rem 0 0 var(--dark-main-color);
+}
+
 #credit a:hover,
 #credit a:active {
   background: none;

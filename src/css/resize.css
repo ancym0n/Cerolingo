@@ -43,6 +43,7 @@ li {
   }
 }
 
-body > section {
+body > section,
+.hero-main > section {
   max-width: 48rem;
 }

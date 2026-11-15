@@ -26,6 +26,16 @@
   }
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
 body {
   background-color: var(--bg-dark);
   display: grid;
@@ -33,6 +43,31 @@ body {
   align-items: center;
   gap: 1.75rem;
   padding: 2rem 1rem 2.75rem;
+}
+
+body:has(#hero) {
+  padding-top: 0;
+}
+
+#hero {
+  width: 100%;
+  max-width: 48rem;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 2rem 0 1.6rem;
+}
+
+.hero-main {
+  width: 100%;
+  display: grid;
+  justify-items: center;
+  align-items: center;
+  gap: 1.5rem;
+  margin: auto 0;
 }
 
 h1,
@@ -89,6 +124,78 @@ a {
     box-shadow 0.3s var(--spring-ease),
     background-color 0.3s ease,
     color 0.3s ease;
+}
+
+#scroll-cue-wrap {
+  display: flex;
+  justify-content: center;
+  will-change: translate, transform, opacity;
+  animation: scrollCueFloat 2.2s ease-in-out infinite;
+  transition:
+    opacity 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.38s var(--spring-ease);
+}
+
+#scroll-cue-wrap.is-hidden {
+  opacity: 0;
+  transform: translateY(12px) scale(0.9);
+  pointer-events: none;
+}
+
+#scroll-cue {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  background-color: var(--panel-bg);
+  border: 2px solid var(--dark-main-color);
+  border-radius: 999px;
+  box-shadow: 0 0.34rem 0 0 var(--dark-main-color);
+  padding: 0.5rem 1.25rem;
+  margin: 0;
+  font-size: 0.92rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--main-color);
+  opacity: 0;
+  animation: cerolingoLoadIn 0.45s var(--spring-ease) 0.22s forwards;
+  transition:
+    translate 0.3s var(--spring-ease),
+    box-shadow 0.3s var(--spring-ease),
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+.scroll-cue-arrow {
+  display: block;
+  animation: scrollCueBob 2.2s ease-in-out infinite;
+}
+
+@keyframes scrollCueFloat {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -6px;
+  }
+}
+
+@keyframes scrollCueBob {
+  0%,
+  100% {
+    transform: translateY(-1px);
+  }
+  50% {
+    transform: translateY(2.5px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #scroll-cue-wrap,
+  .scroll-cue-arrow {
+    animation: none;
+  }
 }
 
 img {
