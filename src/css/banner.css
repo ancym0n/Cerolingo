@@ -25,9 +25,7 @@
   width: 100%;
   max-width: 27rem;
   display: block;
-  filter:
-    drop-shadow(0 0.35rem 0 rgba(10, 16, 20, 0.55))
-    drop-shadow(0 0.5rem 1.6rem rgba(104, 119, 254, 0.28));
+  filter: drop-shadow(0 0.3rem 0 rgba(9, 15, 19, 0.55));
 }
 
 #version {
