@@ -78,8 +78,11 @@ function getStoryTokenCandidates(btn) {
   add(rawText.replace(/[\d\r\n]/g, ""));
 
   const dt = btn.getAttribute?.("data-test") || "";
-  if (dt.endsWith("-challenge-tap-token")) {
-    add(dt.slice(0, -"-challenge-tap-token".length));
+  // "my house" can be encoded as "house-challenge-tap-token my".
+  const dtMatch = dt.match(/^(.*?)-challenge-tap-token(?:\s+(.*))?$/);
+  if (dtMatch) {
+    add(dtMatch[1]);
+    if (dtMatch[2]) add(`${dtMatch[2]} ${dtMatch[1]}`);
   }
 
   return Array.from(candidates);

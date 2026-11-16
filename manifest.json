@@ -3,7 +3,7 @@
   "name": "Cerolingo",
   "author": "ancym0n",
   "description": "Duolingo answer automation extension",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "browser_specific_settings": {
     "gecko": {
       "id": "cerolingo@ancymon.dev",

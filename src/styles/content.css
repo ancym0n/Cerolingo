@@ -110,7 +110,7 @@ body:not(.cerolingo-no-fx) .cerolingo-fx-overlay::after {
 body:not(.cerolingo-no-fx) .cerolingo-bot-click,
 body:not(.cerolingo-no-fx)
   [data-test^="challenge"]:not([data-test*="match"])
-  button[data-test$="-challenge-tap-token"]:not(
+  button[data-test*="-challenge-tap-token"]:not(
     [data-test="word-bank"] button
   ) {
   position: relative !important;
@@ -134,17 +134,17 @@ body:not(.cerolingo-no-fx) .cerolingo-bot-click > span:first-child,
 body:not(.cerolingo-no-fx) .cerolingo-bot-click > div:first-child,
 body:not(.cerolingo-no-fx)
   [data-test^="challenge"]:not([data-test*="match"])
-  button[data-test$="-challenge-tap-token"]:not(
+  button[data-test*="-challenge-tap-token"]:not(
     [data-test="word-bank"] button
   )::before,
 body:not(.cerolingo-no-fx)
   [data-test^="challenge"]:not([data-test*="match"])
-  button[data-test$="-challenge-tap-token"]:not(
+  button[data-test*="-challenge-tap-token"]:not(
     [data-test="word-bank"] button
   )::after,
 body:not(.cerolingo-no-fx)
   [data-test^="challenge"]:not([data-test*="match"])
-  button[data-test$="-challenge-tap-token"]:not([data-test="word-bank"] button)
+  button[data-test*="-challenge-tap-token"]:not([data-test="word-bank"] button)
   > span:first-child {
   background-color: #253366 !important;
   border-color: #8fa4ff !important;

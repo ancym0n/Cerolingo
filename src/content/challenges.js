@@ -65,6 +65,15 @@ function getTokenText(btn) {
   return btn.innerText.replace(/[\d\n]/g, "").trim();
 }
 
+// Tokens are case/whitespace-normalised so "My house " still matches "my house".
+function normToken(text) {
+  return String(text ?? "")
+    .normalize("NFC")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLocaleLowerCase();
+}
+
 function setReactInputValue(el, value) {
   const proto =
     el instanceof HTMLTextAreaElement
@@ -489,7 +498,7 @@ async function solveListen(ch, scope) {
       for (const token of ch.correctTokens) {
         const btns = Array.from(
           bank.querySelectorAll(
-            '[data-test$="-challenge-tap-token"][aria-disabled="false"], button[aria-disabled="false"]',
+            '[data-test*="-challenge-tap-token"][aria-disabled="false"], button[aria-disabled="false"]',
           ),
         );
         const target = btns.find((b) => getTokenText(b) === token);
@@ -520,7 +529,7 @@ async function solvePatternTapComplete(ch, scope) {
     ? Array.from(bank.querySelectorAll('button[aria-disabled="false"]'))
     : Array.from(
         scope.querySelectorAll(
-          'button[data-test$="-challenge-tap-token"][aria-disabled="false"]',
+          'button[data-test*="-challenge-tap-token"][aria-disabled="false"]',
         ),
       );
   if (btns.length === 0) return false;
@@ -605,7 +614,7 @@ async function solveListenMatch(scope) {
 
   const allButtons = Array.from(
     scope.querySelectorAll(
-      'button[data-test$="-challenge-tap-token"][aria-disabled="false"]',
+      'button[data-test*="-challenge-tap-token"][aria-disabled="false"]',
     ),
   );
   if (allButtons.length === 0) return false;
@@ -648,23 +657,35 @@ async function solveMatch(ch, scope) {
 
     if (words.length < 2) continue;
 
+    // Multi-word tokens get data-test values such as "house-challenge-tap-token my",
+    // so match on the substring and compare the visible token text instead.
     const available = Array.from(
       scope.querySelectorAll(
-        'button[data-test$="-challenge-tap-token"][aria-disabled="false"]',
+        'button[data-test*="-challenge-tap-token"][aria-disabled="false"]',
       ),
     );
 
-    const findBtn = (text) =>
-      available.find(
+    const findBtn = (text, exclude) => {
+      const want = normToken(text);
+      return available.find(
         (b) =>
-          getTokenText(b) === text ||
-          b.getAttribute("data-test") === `${text}-challenge-tap-token`,
+          b !== exclude &&
+          (normToken(getTokenText(b)) === want ||
+            normToken(b.getAttribute("data-test")) ===
+              `${want}-challenge-tap-token`),
       );
+    };
 
-    const btn1 = findBtn(words[0]);
-    const btn2 = findBtn(words[1]);
+    // Pick the first two words that resolve to two different buttons
+    // (learningToken and learningWord can be the same text).
+    let btn1 = null;
+    let btn2 = null;
+    for (const word of words) {
+      if (!btn1) btn1 = findBtn(word);
+      else if (!btn2) btn2 = findBtn(word, btn1);
+    }
 
-    if (btn1 && btn2 && btn1 !== btn2) {
+    if (btn1 && btn2) {
       matched = true;
       await botClick(btn1);
       await sleep(80);
