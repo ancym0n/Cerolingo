@@ -126,6 +126,10 @@
   border-left: 1.5px solid rgba(104, 119, 254, 0.4);
 }
 
+.stat-skeleton.is-row-start::before {
+  display: none !important;
+}
+
 @keyframes statShimmer {
   0% {
     background-position: 100% 0;
@@ -180,6 +184,10 @@
 
 .stat-item:not([hidden]) ~ .stat-item:not([hidden]) {
   border-left: 1.5px solid rgba(104, 119, 254, 0.4);
+}
+
+.stat-item.is-row-start {
+  border-left: none !important;
 }
 
 #content > div:not(#stats) {

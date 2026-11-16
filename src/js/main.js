@@ -223,6 +223,31 @@ async function fetchFirefoxStats() {
   };
 }
 
+function updateStatDividers() {
+  const statsContainer = document.getElementById("stats");
+  if (!statsContainer || statsContainer.hidden) return;
+
+  const markRowStarts = (items) => {
+    let prevTop = null;
+    for (const item of items) {
+      const top = item.offsetTop;
+      const isRowStart = prevTop === null || Math.abs(top - prevTop) > 4;
+      item.classList.toggle("is-row-start", isRowStart);
+      prevTop = top;
+    }
+  };
+
+  const skeletons = Array.from(
+    statsContainer.querySelectorAll(".stat-skeleton"),
+  ).filter((el) => el.offsetParent !== null);
+  if (skeletons.length > 0) markRowStarts(skeletons);
+
+  const realItems = Array.from(
+    statsContainer.querySelectorAll(".stat-item:not([hidden])"),
+  ).filter((el) => el.offsetParent !== null);
+  if (realItems.length > 0) markRowStarts(realItems);
+}
+
 async function loadAllStats() {
   const statsContainer = document.getElementById("stats");
   const activeUsersEl = document.getElementById("active-users");
@@ -329,8 +354,10 @@ async function loadAllStats() {
         // to the real items while the shimmer stays visible until the end.
         statsContainer.classList.add("is-swapping");
         statsContainer.classList.remove("is-loading");
+        updateStatDividers();
       },
       () => {
+        updateStatDividers();
         // Crossfade: skeleton overlay fades out as the real items fade in
         statsContainer.classList.add("is-loaded");
         setTimeout(
@@ -560,6 +587,8 @@ function setupScrollCue() {
 document.addEventListener("DOMContentLoaded", () => {
   setLoaderProgress(0.12);
   setupScrollCue();
+  updateStatDividers();
+  window.addEventListener("resize", updateStatDividers, { passive: true });
 
   const pageLoaded = new Promise((resolve) => {
     if (document.readyState === "complete") resolve();
