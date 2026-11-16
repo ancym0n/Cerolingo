@@ -28,6 +28,7 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: clip;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -43,6 +44,7 @@ body {
   align-items: center;
   gap: 1.75rem;
   padding: 2rem 1rem 2.75rem;
+  overflow-x: clip;
 }
 
 body:has(#hero) {
@@ -84,6 +86,11 @@ footer {
 }
 
 h1,
+h2 {
+  text-wrap: balance;
+}
+
+h1,
 h2,
 a {
   font-weight: 800;
@@ -94,6 +101,7 @@ li {
   color: var(--light-main-color);
   font-weight: 700;
   line-height: 1.55;
+  text-wrap: pretty;
 }
 
 strong {
@@ -113,6 +121,7 @@ a {
   align-items: center;
   justify-content: center;
   text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
   background-color: var(--background-color);
   border: 2px solid var(--dark-main-color);
   border-radius: 14px;
