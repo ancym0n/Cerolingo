@@ -50,7 +50,7 @@ function renderXpBadge(targetBox) {
 
   valSpan.textContent =
     typeof lastKnownTotalXp === "number"
-      ? lastKnownTotalXp.toLocaleString()
+      ? `${lastKnownTotalXp.toLocaleString()} XP`
       : "...";
 }
 

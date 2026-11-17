@@ -219,7 +219,7 @@ body:not(.cerolingo-no-fx) .cerolingo-bot-typing * {
 }
 
 #cerolingoModMenu[data-view="xp"] {
-  height: 284px;
+  height: 276px;
 }
 
 #cerolingoModMenu[data-view="settings"] {
@@ -251,7 +251,7 @@ body:not(.cerolingo-no-fx) .cerolingo-bot-typing * {
 }
 
 #cerolingoModMenu[data-view="xp"] #cerolingoModMenuVersion {
-  top: 260px;
+  top: 252px;
 }
 
 #cerolingoModMenu[data-view="settings"] #cerolingoModMenuVersion {
@@ -278,10 +278,10 @@ body:not(.cerolingo-no-fx) .cerolingo-bot-typing * {
 }
 
 #cerolingoModMenu[data-view="xp"] #cerolingoModMenuContent {
-  height: calc(284px - 3rem);
-  grid-template-rows: auto 1fr 1fr;
+  height: calc(276px - 3rem);
+  grid-template-rows: 2.4rem 1fr 1fr;
   gap: 0.95rem;
-  padding: 0.65rem 0.48rem 2.35rem 0.48rem;
+  padding: 0.95rem 0.52rem 2.65rem 0.52rem;
 }
 
 #cerolingoModMenuContent.cerolingoBlurOut {
@@ -454,11 +454,17 @@ body:not(.cerolingo-no-fx) .cerolingo-bot-typing * {
   box-shadow: 0px 0.18rem 0px 0px var(--dark-red-color) !important;
 }
 
+#cerolingoModMenuLoop[running="true"] {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.1rem;
+}
+
 #cerolingoModMenuLoopCount {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 0.78rem;
+  font-size: 0.74rem;
+  line-height: 1.1;
   width: 88%;
   margin: 0;
 }
@@ -467,7 +473,7 @@ body:not(.cerolingo-no-fx) .cerolingo-bot-typing * {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.35rem;
+  gap: 0.4rem;
   text-align: center;
   font-size: 0.86rem;
   font-weight: 800;
@@ -475,10 +481,10 @@ body:not(.cerolingo-no-fx) .cerolingo-bot-typing * {
   color: var(--title-color);
   background-color: rgba(104, 119, 254, 0.14);
   border: 2px solid var(--dark-main-color);
-  border-radius: 12px;
+  border-radius: 14px;
   box-shadow: none;
-  padding: 0.35rem 0.5rem;
-  margin: 0;
+  padding: 0 0.6rem;
+  margin: 0 0 -0.42rem 0;
   pointer-events: none;
 }
 
