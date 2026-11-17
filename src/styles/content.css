@@ -1,0 +1,511 @@
+* {
+  --background-color: #7b93ff;
+  --dark-main-color: #6877fe;
+  --main-color: #a1b2ff;
+  --light-main-color: #b3d0ff;
+  --title-color: #e7ecff;
+  --alt-main-color: #7385fa;
+
+  --green-color: #7bffd0;
+  --dark-green-color: #5fc18c;
+  --red-color: #ff8585;
+  --dark-red-color: #c95353;
+
+  --spring-ease: cubic-bezier(0.34, 1.22, 0.64, 1);
+}
+
+#legendaryBypass {
+  --web-ui_button-background-color: var(--dark-main-color) !important;
+  --web-ui_button-border-color: var(--dark-main-color) !important;
+  --web-ui_button-color: var(--light-main-color) !important;
+  --web-ui_button-color-disabled: var(--dark-main-color) !important;
+  --web-ui_button-filter-hover: none !important;
+}
+
+#legendaryBypass::before {
+  background:
+    linear-gradient(
+      136deg,
+      transparent 10%,
+      var(--background-color) 10%,
+      var(--background-color) 40%,
+      transparent 40%,
+      transparent 53%,
+      var(--background-color) 53%,
+      var(--background-color) 71%,
+      transparent 71%
+    ),
+    var(--alt-main-color) !important;
+}
+
+@keyframes cerolingoBotPulse {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(0.96);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes cerolingoOverlayPop {
+  0% {
+    opacity: 0.9;
+    transform: scale(0.97);
+  }
+  35% {
+    opacity: 0.95;
+    transform: scale(1.01);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.04);
+  }
+}
+
+@keyframes cerolingoOverlayRing {
+  0% {
+    opacity: 0.65;
+    inset: -1px;
+  }
+  100% {
+    opacity: 0;
+    inset: -7px;
+  }
+}
+
+body.cerolingo-no-fx .cerolingo-fx-overlay {
+  display: none !important;
+}
+
+body:not(.cerolingo-no-fx) .cerolingo-fx-overlay {
+  position: fixed !important;
+  z-index: 250 !important;
+  pointer-events: none !important;
+  box-sizing: border-box !important;
+  border: 2px solid #8fa4ff !important;
+  background: linear-gradient(
+    135deg,
+    rgba(104, 119, 254, 0.28) 0%,
+    rgba(123, 147, 255, 0.14) 100%
+  ) !important;
+  box-shadow:
+    0 0 10px 1px rgba(104, 119, 254, 0.55),
+    inset 0 0 8px rgba(231, 236, 255, 0.3) !important;
+  animation: cerolingoOverlayPop 0.3s var(--spring-ease) forwards !important;
+}
+
+body:not(.cerolingo-no-fx) .cerolingo-fx-overlay::after {
+  content: "" !important;
+  position: absolute !important;
+  inset: -1px !important;
+  border-radius: inherit !important;
+  border: 1.5px solid rgba(179, 208, 255, 0.65) !important;
+  pointer-events: none !important;
+  animation: cerolingoOverlayRing 0.3s ease-out forwards !important;
+}
+
+body:not(.cerolingo-no-fx) .cerolingo-bot-click,
+body:not(.cerolingo-no-fx)
+  [data-test^="challenge"]:not([data-test*="match"])
+  button[data-test*="-challenge-tap-token"]:not(
+    [data-test="word-bank"] button
+  ) {
+  position: relative !important;
+  z-index: 200 !important;
+  --web-ui_button-background-color: #253366 !important;
+  --web-ui_button-border-color: #8fa4ff !important;
+  --web-ui_button-color: var(--title-color) !important;
+  background-color: #253366 !important;
+  border-color: #8fa4ff !important;
+  color: var(--title-color) !important;
+  outline: 2px solid #8fa4ff !important;
+  box-shadow:
+    0 4px 0 var(--dark-main-color),
+    0 0 10px 1px rgba(104, 119, 254, 0.45) !important;
+  animation: cerolingoBotPulse 0.3s var(--spring-ease);
+}
+
+body:not(.cerolingo-no-fx) .cerolingo-bot-click::before,
+body:not(.cerolingo-no-fx) .cerolingo-bot-click::after,
+body:not(.cerolingo-no-fx) .cerolingo-bot-click > span:first-child,
+body:not(.cerolingo-no-fx) .cerolingo-bot-click > div:first-child,
+body:not(.cerolingo-no-fx)
+  [data-test^="challenge"]:not([data-test*="match"])
+  button[data-test*="-challenge-tap-token"]:not(
+    [data-test="word-bank"] button
+  )::before,
+body:not(.cerolingo-no-fx)
+  [data-test^="challenge"]:not([data-test*="match"])
+  button[data-test*="-challenge-tap-token"]:not(
+    [data-test="word-bank"] button
+  )::after,
+body:not(.cerolingo-no-fx)
+  [data-test^="challenge"]:not([data-test*="match"])
+  button[data-test*="-challenge-tap-token"]:not([data-test="word-bank"] button)
+  > span:first-child {
+  background-color: #253366 !important;
+  border-color: #8fa4ff !important;
+  box-shadow:
+    0 4px 0 var(--dark-main-color),
+    0 0 8px rgba(104, 119, 254, 0.4) !important;
+}
+
+body:not(.cerolingo-no-fx) .cerolingo-bot-click * {
+  color: var(--title-color) !important;
+}
+
+body:not(.cerolingo-no-fx) .cerolingo-bot-typing {
+  position: relative !important;
+  z-index: 200 !important;
+  border-color: #8fa4ff !important;
+  background-color: #253366 !important;
+  outline: 2px solid #8fa4ff !important;
+  box-shadow:
+    0 4px 0 var(--dark-main-color),
+    0 0 12px 2px rgba(104, 119, 254, 0.55) !important;
+  color: var(--title-color) !important;
+  animation: cerolingoBotPulse 0.3s var(--spring-ease);
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    background-color 0.3s ease !important;
+}
+
+body:not(.cerolingo-no-fx) .cerolingo-bot-typing * {
+  color: var(--title-color) !important;
+}
+
+@keyframes cerolingoMenuEnter {
+  0% {
+    opacity: 0;
+    filter: blur(26px);
+    transform: translateY(12px) scale(0.92);
+  }
+  55% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0px);
+    transform: translateY(0) scale(1);
+  }
+}
+
+#cerolingoModMenu {
+  animation: cerolingoMenuEnter 0.52s var(--spring-ease) both;
+  transition:
+    height 0.3s var(--spring-ease),
+    box-shadow 0.3s var(--spring-ease);
+  overflow: hidden;
+  box-sizing: border-box;
+  z-index: 1000;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: none;
+  height: 260px;
+  width: 200px;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  border-radius: 16px;
+  background-color: #131f24;
+  box-shadow: 0px 0.42rem 0px 0px var(--dark-main-color);
+  display: flex;
+  flex-direction: column;
+  font-family: "din-round-web", "Nunito", sans-serif;
+}
+
+#cerolingoModMenu[data-view="xp"] {
+  height: 276px;
+}
+
+#cerolingoModMenu[data-view="settings"] {
+  height: 368px;
+}
+
+#cerolingoModMenu * {
+  transition: all 0.3s var(--spring-ease);
+  font-family: "din-round-web", "Nunito", sans-serif;
+}
+
+#cerolingoModMenuVersion {
+  color: var(--dark-main-color);
+  position: absolute;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  right: 0.6rem;
+  top: 236px;
+  margin: 0;
+  z-index: 100;
+  pointer-events: none;
+  opacity: 1;
+  filter: blur(0px);
+  transition:
+    top 0.3s var(--spring-ease),
+    opacity 0.3s ease,
+    filter 0.3s ease !important;
+}
+
+#cerolingoModMenu[data-view="xp"] #cerolingoModMenuVersion {
+  top: 252px;
+}
+
+#cerolingoModMenu[data-view="settings"] #cerolingoModMenuVersion {
+  top: 344px;
+}
+
+#cerolingoModMenuContent {
+  position: relative;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  display: grid;
+  grid-auto-rows: 1fr;
+  gap: 0.85rem;
+  width: 100%;
+  height: calc(260px - 3rem);
+  padding: 0.7rem 0.48rem 2.15rem 0.48rem;
+  opacity: 1;
+  filter: blur(0px);
+  transform: scale(1);
+  transition:
+    opacity 0.15s ease,
+    filter 0.15s ease,
+    transform 0.15s ease !important;
+}
+
+#cerolingoModMenu[data-view="xp"] #cerolingoModMenuContent {
+  height: calc(276px - 3rem);
+  grid-template-rows: 2.4rem 1fr 1fr;
+  gap: 0.95rem;
+  padding: 0.95rem 0.52rem 2.65rem 0.52rem;
+}
+
+#cerolingoModMenuContent.cerolingoBlurOut {
+  opacity: 0 !important;
+  filter: blur(18px) !important;
+  transform: scale(0.94) !important;
+  pointer-events: none;
+}
+
+#cerolingoModMenu[data-view="settings"] #cerolingoModMenuContent {
+  height: calc(368px - 3rem);
+  gap: 0.65rem;
+  padding: 0.65rem 0.48rem 2.1rem 0.48rem;
+}
+
+#cerolingoModMenu[data-view="settings"]
+  #cerolingoModMenuContent
+  button:not(#cerolingoModMenuBackButton) {
+  margin: 0;
+  font-size: 0.82rem;
+}
+
+#cerolingoModMenu,
+#cerolingoModMenu button,
+#cerolingoModMenu input,
+#cerolingoModMenuTitleBar {
+  border-width: 2px;
+  border-style: solid;
+  border-color: var(--dark-main-color);
+}
+
+#cerolingoModMenuTitleBar,
+#cerolingoModMenuTitleBar img {
+  z-index: 100;
+  position: relative;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  user-select: none !important;
+  -webkit-user-drag: none !important;
+}
+
+#cerolingoModMenuTitleBar {
+  flex-shrink: 0;
+  box-sizing: border-box;
+  height: calc(3rem - 4px);
+  display: grid;
+  align-items: center;
+  justify-items: center;
+  border-radius: 14px;
+  cursor: pointer;
+}
+
+#cerolingoModMenuTitleBar:hover {
+  background-color: #889eff;
+}
+
+#cerolingoModMenuTitleBar img {
+  width: 9rem;
+  padding: 0.1rem 0;
+}
+
+#cerolingoModMenu button,
+#cerolingoModMenu input {
+  color: var(--title-color);
+  transition: all 0.3s var(--spring-ease);
+  position: relative;
+  display: block;
+  margin: 0;
+  border-radius: 14px;
+  cursor: pointer;
+  font-weight: 800;
+  font-size: 0.88rem;
+}
+
+#cerolingoModMenu button,
+#cerolingoModMenu input,
+#cerolingoModMenuTitleBar {
+  background-color: var(--background-color);
+  box-shadow: 0px 0.42rem 0px 0px var(--dark-main-color);
+}
+
+.cerolingoMinimized {
+  height: 3rem !important;
+}
+
+.cerolingoMinimized #cerolingoModMenuContent,
+.cerolingoMinimized #cerolingoModMenuVersion {
+  transition:
+    opacity 0.3s ease,
+    filter 0.3s ease,
+    transform 0.3s var(--spring-ease) !important;
+  opacity: 0 !important;
+  filter: blur(18px) !important;
+  transform: scale(0.94) !important;
+  pointer-events: none;
+}
+
+#cerolingoModMenu button:hover {
+  background-color: #889eff;
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0px calc(0.42rem + 2px) 0px 0px var(--dark-main-color);
+}
+
+#cerolingoModMenu button:active {
+  transform: translateY(2px);
+  box-shadow: 0px 0.18rem 0px 0px var(--dark-main-color);
+}
+
+#cerolingoModMenuBackButton {
+  background: none !important;
+  border-color: var(--dark-main-color) !important;
+  position: absolute !important;
+  box-shadow: none !important;
+  bottom: 0.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 1.45rem;
+  width: 42%;
+  font-size: 0.78rem;
+  color: var(--dark-main-color) !important;
+  opacity: 0.8;
+}
+
+#cerolingoModMenuBackButton:hover {
+  background: rgba(104, 119, 254, 0.14) !important;
+  color: var(--title-color) !important;
+  transform: translateX(-50%) !important;
+  width: 50%;
+  opacity: 1;
+}
+
+#cerolingoModMenu button[toggle="true"] {
+  background-color: var(--green-color) !important;
+  border-color: var(--dark-green-color) !important;
+  box-shadow: 0px 0.42rem 0px 0px var(--dark-green-color) !important;
+  color: var(--dark-green-color) !important;
+}
+
+#cerolingoModMenu button[toggle="false"],
+#cerolingoModMenu button[running="true"] {
+  background-color: var(--red-color) !important;
+  border-color: var(--dark-red-color) !important;
+  box-shadow: 0px 0.42rem 0px 0px var(--dark-red-color) !important;
+  color: var(--dark-red-color) !important;
+}
+
+#cerolingoModMenu button[toggle="true"]:hover {
+  box-shadow: 0px calc(0.42rem + 2px) 0px 0px var(--dark-green-color) !important;
+}
+
+#cerolingoModMenu button[toggle="false"]:hover,
+#cerolingoModMenu button[running="true"]:hover {
+  box-shadow: 0px calc(0.42rem + 2px) 0px 0px var(--dark-red-color) !important;
+}
+
+#cerolingoModMenu input {
+  background: none;
+  width: 100%;
+  padding: 0;
+  text-align: center;
+}
+
+.cerolingoButtonClicked {
+  transform: translateY(2px) !important;
+  box-shadow: 0px 0.18rem 0px 0px var(--dark-main-color) !important;
+}
+
+.cerolingoButtonClicked[running="true"] {
+  box-shadow: 0px 0.18rem 0px 0px var(--dark-red-color) !important;
+}
+
+#cerolingoModMenuLoop[running="true"] {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.1rem;
+}
+
+#cerolingoModMenuLoopCount {
+  font-size: 0.74rem;
+  line-height: 1.1;
+  width: 88%;
+  margin: 0;
+}
+
+#cerolingoModMenuXpStatus {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  text-align: center;
+  font-size: 0.86rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: var(--title-color);
+  background-color: rgba(104, 119, 254, 0.14);
+  border: 2px solid var(--dark-main-color);
+  border-radius: 14px;
+  box-shadow: none;
+  padding: 0 0.6rem;
+  margin: 0 0 -0.42rem 0;
+  pointer-events: none;
+}
+
+#cerolingoModMenuXpIcon {
+  width: 1.15rem;
+  height: 1.15rem;
+  display: block;
+  filter: hue-rotate(185deg) saturate(1.35) brightness(1.05);
+  -webkit-user-drag: none;
+}
+
+#cerolingoModMenuActivationInfo {
+  padding: 1rem 0;
+  text-align: center;
+  color: var(--dark-red-color);
+}
+
+#overlays > div:has(a[href*="mobile_web_to_app_conversion"]),
+#overlays > div:has(a[href*="adj.st"]),
+#overlays > div:has(img[src*="617c9bcf01673a55c983c7d0a14a6bd4.svg"]) {
+  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
