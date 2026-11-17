@@ -77,6 +77,52 @@ function findStoryJsonUrl() {
   );
 }
 
+function dismissMobileAppPromo() {
+  const overlays = document.getElementById("overlays") || document.body;
+  if (!overlays) return;
+
+  const appLink = overlays.querySelector(
+    'a[href*="mobile_web_to_app_conversion"], a[href*="adj.st"]',
+  );
+  const promoImg = overlays.querySelector(
+    'img[src*="617c9bcf01673a55c983c7d0a14a6bd4.svg"]',
+  );
+  const container =
+    appLink?.parentElement || promoImg?.parentElement || null;
+
+  if (container) {
+    const continueBtn = container.querySelector("button");
+    if (continueBtn) {
+      continueBtn.click();
+      return;
+    }
+  }
+
+  const buttons = overlays.querySelectorAll("button");
+  for (const btn of buttons) {
+    const text = (btn.innerText || btn.textContent || "").trim().toLowerCase();
+    if (
+      text === "continue in browser" ||
+      text === "kontynuuj w przeglądarce" ||
+      text === "weiter im browser"
+    ) {
+      btn.click();
+      return;
+    }
+  }
+}
+
+const overlayObserver = new MutationObserver(() => {
+  dismissMobileAppPromo();
+});
+
+if (document.documentElement) {
+  overlayObserver.observe(document.documentElement, {
+    childList: true,
+    subtree: true,
+  });
+}
+
 function run() {
   if (!document.getElementById("CEROLINGO") && document.body) {
     const cerolingo = document.createElement("div");
@@ -129,6 +175,8 @@ function run() {
 }
 
 setInterval(() => {
+  dismissMobileAppPromo();
+
   const href = window.location.href;
   const inLesson =
     href.includes("/lesson") ||

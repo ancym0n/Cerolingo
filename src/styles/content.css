@@ -501,3 +501,11 @@ body:not(.cerolingo-no-fx) .cerolingo-bot-typing * {
   text-align: center;
   color: var(--dark-red-color);
 }
+
+#overlays > div:has(a[href*="mobile_web_to_app_conversion"]),
+#overlays > div:has(a[href*="adj.st"]),
+#overlays > div:has(img[src*="617c9bcf01673a55c983c7d0a14a6bd4.svg"]) {
+  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
