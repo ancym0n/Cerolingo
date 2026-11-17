@@ -31,9 +31,65 @@ function isStoryApiUrl(url) {
   return (
     typeof url === "string" &&
     (url.startsWith("https://stories.duolingo.") ||
+      url.startsWith("https://stories-edge.duolingo.") ||
       url.includes("/api2/stories/")) &&
     !url.includes("/complete")
   );
+}
+
+function isStoryObj(obj) {
+  return Boolean(
+    obj &&
+      typeof obj === "object" &&
+      Array.isArray(obj.elements) &&
+      obj.elements.length > 0 &&
+      obj.elements.some((el) => el && typeof el.type === "string"),
+  );
+}
+
+function findStoryInObject(obj, depth = 3, seen = new Set()) {
+  if (!obj || typeof obj !== "object" || seen.has(obj)) return null;
+  if (isStoryObj(obj)) return obj;
+  if (depth <= 0 || obj instanceof Node || obj instanceof Window) return null;
+  seen.add(obj);
+
+  const directKeys = ["story", "storyData", "currentStory", "data", "value"];
+  for (const k of directKeys) {
+    if (obj[k] && typeof obj[k] === "object") {
+      const found = findStoryInObject(obj[k], depth - 1, seen);
+      if (found) return found;
+    }
+  }
+
+  const skipKeys = new Set([
+    "return",
+    "child",
+    "sibling",
+    "alternate",
+    "stateNode",
+    "_owner",
+    "_store",
+    "deps",
+    "destroy",
+  ]);
+
+  const keys = Object.keys(obj);
+  for (let i = 0; i < Math.min(keys.length, 40); i++) {
+    const k = keys[i];
+    if (skipKeys.has(k) || k.startsWith("__react")) continue;
+    let val;
+    try {
+      val = obj[k];
+    } catch {
+      continue;
+    }
+    if (val && typeof val === "object") {
+      const found = findStoryInObject(val, depth - 1, seen);
+      if (found) return found;
+    }
+  }
+
+  return null;
 }
 
 function recordStoryUrl(url) {
@@ -42,11 +98,33 @@ function recordStoryUrl(url) {
   }
 }
 
-function recordStoryJson(text, url) {
-  if (typeof text === "string" && text.includes('"elements"')) {
-    document.documentElement?.setAttribute("data-cerolingo-story-json", text);
-    if (url) recordStoryUrl(url);
+function recordStoryCandidate(candidate, url) {
+  if (!isStoryObj(candidate)) return false;
+  document.documentElement?.setAttribute(
+    "data-cerolingo-story-json",
+    JSON.stringify({ id: candidate.id, elements: candidate.elements }),
+  );
+  if (url && isStoryApiUrl(url)) {
+    recordStoryUrl(url);
+  } else if (
+    typeof candidate.id === "string" &&
+    candidate.id &&
+    !document.documentElement?.hasAttribute("data-cerolingo-story-url")
+  ) {
+    recordStoryUrl(`https://stories.duolingo.com/api2/stories/${candidate.id}`);
   }
+  return true;
+}
+
+function recordStoryJson(text, url) {
+  if (typeof text !== "string" || !text.includes('"elements"')) return;
+  try {
+    const parsed = JSON.parse(text);
+    const candidate = findStoryInObject(parsed, 3);
+    if (candidate) {
+      recordStoryCandidate(candidate, url);
+    }
+  } catch {}
 }
 
 if (typeof window.fetch === "function") {
@@ -61,7 +139,7 @@ if (typeof window.fetch === "function") {
       recordStoryUrl(reqUrl);
     } catch {}
     const promise = origFetch.apply(this, args);
-    if (isStoryApiUrl(reqUrl)) {
+    if (!/\.(svg|png|jpe?g|gif|webp|woff2?|mp3|ogg|wav|css)(\?|$)/i.test(reqUrl)) {
       promise
         .then((res) => res.clone().text())
         .then((text) => {
@@ -79,8 +157,10 @@ if (window.XMLHttpRequest) {
     try {
       const reqUrl =
         typeof url === "string" ? url : url?.href || String(url || "");
-      if (isStoryApiUrl(reqUrl)) {
-        recordStoryUrl(reqUrl);
+      recordStoryUrl(reqUrl);
+      if (
+        !/\.(svg|png|jpe?g|gif|webp|woff2?|mp3|ogg|wav|css)(\?|$)/i.test(reqUrl)
+      ) {
         this.addEventListener("load", function () {
           try {
             let text = "";
@@ -101,20 +181,71 @@ if (window.XMLHttpRequest) {
   };
 }
 
-function extractStoryFromFiber() {
-  if (document.documentElement?.hasAttribute("data-cerolingo-story-json")) {
-    return;
-  }
-  if (!document.querySelector('[data-test="stories-element"]')) {
-    return;
-  }
+function searchFiberForStory(startNode, maxNodes, visited) {
+  const queue = [startNode];
+  while (queue.length > 0 && visited.size < maxNodes) {
+    const node = queue.shift();
+    if (!node || visited.has(node)) continue;
+    visited.add(node);
 
-  const isStoryObj = (obj) =>
-    obj &&
-    typeof obj === "object" &&
-    Array.isArray(obj.elements) &&
-    obj.elements.length > 0 &&
-    obj.elements.some((el) => el && typeof el.type === "string");
+    const fromProps = findStoryInObject(node.memoizedProps, 3);
+    if (fromProps && recordStoryCandidate(fromProps)) return true;
+
+    let s = node.memoizedState;
+    let hookSteps = 0;
+    while (s && hookSteps < 40) {
+      hookSteps++;
+      const ms = s.memoizedState ?? s;
+      const fromState = findStoryInObject(ms, 3);
+      if (fromState && recordStoryCandidate(fromState)) return true;
+      const fromQueue = findStoryInObject(s.queue?.lastRenderedState, 3);
+      if (fromQueue && recordStoryCandidate(fromQueue)) return true;
+      s = s.next;
+    }
+
+    if (node.child) queue.push(node.child);
+    if (node.sibling) queue.push(node.sibling);
+  }
+  return false;
+}
+
+function extractStoryFromFiber() {
+  const storyDomEl = document.querySelector(
+    '[data-test="stories-element"], button[data-test="story-start"], button[data-test="stories-player-continue"], button[data-test="stories-player-done"], button[data-test="stories-choice"], img[src*="stories-cdn.duolingo.com"]',
+  );
+  if (!storyDomEl) return;
+
+  const visited = new Set();
+
+  const elFiberKey = Object.keys(storyDomEl).find(
+    (k) =>
+      k.startsWith("__reactFiber$") || k.startsWith("__reactInternalInstance$"),
+  );
+  if (elFiberKey) {
+    let curr = storyDomEl[elFiberKey];
+    while (curr) {
+      const fromProps = findStoryInObject(curr.memoizedProps, 3);
+      if (fromProps && recordStoryCandidate(fromProps)) return;
+
+      let s = curr.memoizedState;
+      let hookSteps = 0;
+      while (s && hookSteps < 40) {
+        hookSteps++;
+        const ms = s.memoizedState ?? s;
+        const fromState = findStoryInObject(ms, 3);
+        if (fromState && recordStoryCandidate(fromState)) return;
+        const fromQueue = findStoryInObject(s.queue?.lastRenderedState, 3);
+        if (fromQueue && recordStoryCandidate(fromQueue)) return;
+        s = s.next;
+      }
+
+      curr = curr.return;
+    }
+
+    if (searchFiberForStory(storyDomEl[elFiberKey], 1500, visited)) {
+      return;
+    }
+  }
 
   const root = document.querySelector("#root");
   if (root) {
@@ -125,52 +256,9 @@ function extractStoryFromFiber() {
         k.startsWith("__reactInternalInstance$"),
     );
     if (fiberKey) {
-      const visited = new Set();
-      const queue = [root[fiberKey]];
-      while (queue.length > 0 && visited.size < 2500) {
-        const node = queue.shift();
-        if (!node || visited.has(node)) continue;
-        visited.add(node);
-
-        const p = node.memoizedProps;
-        if (p) {
-          const candidate = isStoryObj(p)
-            ? p
-            : isStoryObj(p.story)
-              ? p.story
-              : isStoryObj(p.storyData)
-                ? p.storyData
-                : null;
-          if (candidate) {
-            recordStoryJson(JSON.stringify({ elements: candidate.elements }));
-            return;
-          }
-        }
-
-        let s = node.memoizedState;
-        while (s) {
-          const ms = s.memoizedState;
-          if (ms && typeof ms === "object") {
-            const candidate = isStoryObj(ms)
-              ? ms
-              : isStoryObj(ms.story)
-                ? ms.story
-                : isStoryObj(ms.storyData)
-                  ? ms.storyData
-                  : null;
-            if (candidate) {
-              recordStoryJson(JSON.stringify({ elements: candidate.elements }));
-              return;
-            }
-          }
-          s = s.next;
-        }
-
-        if (node.child) queue.push(node.child);
-        if (node.sibling) queue.push(node.sibling);
-      }
+      searchFiberForStory(root[fiberKey], 10000, visited);
     }
   }
 }
 
-setInterval(extractStoryFromFiber, 300);
+setInterval(extractStoryFromFiber, 250);

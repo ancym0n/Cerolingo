@@ -46,6 +46,15 @@ loadedLog("main");
 
 let wasInLesson = false;
 let jsonInterval = null;
+let storyBotStarted = false;
+let lastSavedStoryId = null;
+
+const STORY_DOM_SELECTOR =
+  '[data-test="stories-element"], button[data-test="story-start"], button[data-test="stories-player-continue"], button[data-test="stories-player-done"], button[data-test="stories-choice"], img[src*="stories-cdn.duolingo.com"]';
+
+function isStoryDomPresent() {
+  return Boolean(document.querySelector(STORY_DOM_SELECTOR));
+}
 
 function findStoryJsonUrl() {
   const jsons = performance
@@ -53,6 +62,7 @@ function findStoryJsonUrl() {
     .filter(
       (resource) =>
         (resource.name.startsWith("https://stories.duolingo.") ||
+          resource.name.startsWith("https://stories-edge.duolingo.") ||
           resource.name.includes("/api2/stories/")) &&
         !resource.name.includes("/complete"),
     )
@@ -74,6 +84,9 @@ function run() {
     document.body.appendChild(cerolingo);
   }
 
+  storyBotStarted = false;
+  lastSavedStoryId = null;
+
   const href = window.location.href;
   if (href.includes("/lesson") || href.includes("/stories")) {
     chrome.storage.local.set({
@@ -85,28 +98,34 @@ function run() {
   if (jsonInterval) clearInterval(jsonInterval);
 
   jsonInterval = setInterval(() => {
+    const currentHref = window.location.href;
+    const isStoryRoute =
+      currentHref.includes("/story") || currentHref.includes("/stories");
+    const hasStoryDom = isStoryDomPresent();
+
+    if (!isStoryRoute && !hasStoryDom) {
+      return;
+    }
+
     const lessonJsonURL = findStoryJsonUrl();
     if (lessonJsonURL) {
       const linkToSave = lessonJsonURL.split("?")[0];
-      const lessonURL = window.location.href;
-      chrome.storage.local.set(
-        { storyId: linkToSave, url: lessonURL, isStoryUrl: true },
-        () => {
-          cerolingoLog("main", "Story ID saved to storage", linkToSave);
-        },
-      );
-      clearInterval(jsonInterval);
-      jsonInterval = null;
+      if (linkToSave !== lastSavedStoryId) {
+        lastSavedStoryId = linkToSave;
+        chrome.storage.local.set(
+          { storyId: linkToSave, url: currentHref, isStoryUrl: true },
+          () => {
+            cerolingoLog("main", "Story ID saved to storage", linkToSave);
+          },
+        );
+      }
+    }
+
+    if (!storyBotStarted) {
+      storyBotStarted = true;
       autoAnswerBot(lessonJsonURL);
     }
-  }, 200);
-
-  setTimeout(() => {
-    if (jsonInterval) {
-      clearInterval(jsonInterval);
-      jsonInterval = null;
-    }
-  }, 15000);
+  }, 150);
 }
 
 setInterval(() => {
@@ -124,14 +143,12 @@ setInterval(() => {
   } else {
     if (wasInLesson) {
       wasInLesson = false;
+      storyBotStarted = false;
       if (jsonInterval) {
         clearInterval(jsonInterval);
         jsonInterval = null;
       }
       document.getElementById("CEROLINGO")?.remove();
-      document.documentElement?.removeAttribute("data-cerolingo-story-url");
-      document.documentElement?.removeAttribute("data-cerolingo-story-json");
-      performance.clearResourceTimings?.();
       if (typeof stopStorySolver === "function") {
         stopStorySolver();
       }

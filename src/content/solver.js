@@ -256,16 +256,41 @@ async function autoAnswerBot(url) {
   let answerM = [];
   let answerGF = [];
   let lastCachedAttr = null;
+  let fetchedUrl = null;
+  let fetchingUrl = false;
+
+  const hasAnyAnswers = () =>
+    answerMP.length +
+      answerSP.length +
+      answerPTP.length +
+      answerA.length +
+      answerM.length +
+      answerGF.length >
+    0;
 
   const applyData = (data) => {
     if (!data || !Array.isArray(data.elements)) return;
     const sets = buildAnswerSets(data);
-    answerMP = [...sets.answerMP, ...answerMP];
-    answerSP = [...sets.answerSP, ...answerSP];
-    answerPTP = [...sets.answerPTP, ...answerPTP];
-    answerA = [...sets.answerA, ...answerA];
-    answerM = [...sets.answerM, ...answerM];
-    answerGF = [...sets.answerGF, ...answerGF];
+    answerMP = sets.answerMP;
+    answerSP = sets.answerSP;
+    answerPTP = sets.answerPTP;
+    answerA = sets.answerA;
+    answerM = sets.answerM;
+    answerGF = sets.answerGF;
+  };
+
+  const tryFetchFromUrl = async (targetUrl) => {
+    if (!targetUrl || fetchingUrl || targetUrl === fetchedUrl) return;
+    fetchingUrl = true;
+    fetchedUrl = targetUrl;
+    try {
+      const data = await fetchStoryData(targetUrl);
+      applyData(data);
+    } catch (error) {
+      cerolingoLog("solver", "Error fetching story JSON", error);
+    } finally {
+      fetchingUrl = false;
+    }
   };
 
   storyStartInterval = setInterval(() => {
@@ -284,15 +309,22 @@ async function autoAnswerBot(url) {
     }
   }, 100);
 
-  setTimeout(() => {
-    if (storyStartInterval) {
-      clearInterval(storyStartInterval);
-      storyStartInterval = null;
-    }
-  }, 10000);
-
   contClickerInterval = setInterval(() => {
     if (localStorage.getItem("autoSolver") === "false") return;
+
+    const now = Date.now();
+    const storyStartButton = document.querySelector(
+      'button[data-test="story-start"]',
+    );
+    if (
+      storyStartButton &&
+      !storyStartButton.disabled &&
+      storyStartButton.getAttribute("aria-disabled") !== "true" &&
+      now - (storyStartButton._cerolingoStartClickedAt || 0) >= 400
+    ) {
+      storyStartButton._cerolingoStartClickedAt = now;
+      storyClick(storyStartButton);
+    }
 
     const currentCachedAttr = document.documentElement?.getAttribute(
       "data-cerolingo-story-json",
@@ -301,6 +333,16 @@ async function autoAnswerBot(url) {
       lastCachedAttr = currentCachedAttr;
       const parsed = readCachedStoryData();
       if (parsed) applyData(parsed);
+    }
+
+    if (!hasAnyAnswers() && !fetchingUrl) {
+      const discoveredUrl =
+        typeof findStoryJsonUrl === "function"
+          ? findStoryJsonUrl()
+          : document.documentElement?.getAttribute("data-cerolingo-story-url");
+      if (discoveredUrl && discoveredUrl !== fetchedUrl) {
+        tryFetchFromUrl(discoveredUrl);
+      }
     }
 
     const continueButton = document.querySelector(
@@ -316,7 +358,6 @@ async function autoAnswerBot(url) {
       return;
     }
 
-    const now = Date.now();
     const allChoiceButtons = Array.from(
       document.querySelectorAll('button[data-test="stories-choice"]'),
     ).filter(
@@ -506,12 +547,12 @@ async function autoAnswerBot(url) {
     }
   }, 100);
 
-  try {
-    const data = await fetchStoryData(url);
-    applyData(data);
-    return data;
-  } catch (error) {
-    cerolingoLog("solver", "Error fetching story JSON", error);
+  const initialCached = readCachedStoryData();
+  if (initialCached) {
+    applyData(initialCached);
+  }
+  if (url) {
+    await tryFetchFromUrl(url);
   }
 }
 

@@ -699,12 +699,9 @@ async function solveMatch(ch, scope) {
 
 function isStoryLessonPage(href) {
   if (href.includes("/story") || href.includes("/stories")) return true;
-  if (document.documentElement?.hasAttribute("data-cerolingo-story-url")) {
-    return true;
-  }
   return Boolean(
     document.querySelector(
-      '[data-test="stories-element"], button[data-test="story-start"], button[data-test="stories-player-continue"], button[data-test="stories-player-done"], button[data-test="stories-choice"]',
+      '[data-test="stories-element"], button[data-test="story-start"], button[data-test="stories-player-continue"], button[data-test="stories-player-done"], button[data-test="stories-choice"], img[src*="stories-cdn.duolingo.com"]',
     ),
   );
 }
