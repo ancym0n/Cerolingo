@@ -15,3 +15,7 @@ Official landing page and privacy policy site for the Cerolingo browser extensio
 - [Chrome Web Store](https://chromewebstore.google.com/detail/cerolingo/apgkphplddmjkoogmoijendkdjaaeiii)
 - [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/cerolingo/)
 - [GitHub Repository](https://github.com/ancym0n/Cerolingo)
+
+## Cerolingo Bot Manager
+
+Want to create Duolingo accounts in bulk, farm XP across a saved account list, or run headless Playwright sessions from a desktop app? Check out [Cerolingo Bot Manager](https://ancymon.dev/Cerolingo-Bot-Manager/) ([GitHub](https://github.com/ancym0n/Cerolingo-Bot-Manager)) for Windows and Linux.
