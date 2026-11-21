@@ -174,7 +174,13 @@ function spawnStoryFxOverlay(el) {
 }
 
 function storyClick(el) {
-  if (!el) return;
+  if (!el || el.disabled || el.getAttribute?.("aria-disabled") === "true") {
+    return;
+  }
+  const now = Date.now();
+  if (now - Number(el._cerolingoLastStoryClickAt || 0) < 180) return;
+  el._cerolingoLastStoryClickAt = now;
+
   if (localStorage.getItem("botHighlight") !== "false") {
     el.classList.add("cerolingo-bot-click");
     spawnStoryFxOverlay(el);
