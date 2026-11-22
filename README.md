@@ -25,3 +25,7 @@ Browser extension for automating Duolingo lessons, stories, and XP progression d
 2. Drag the menu anywhere on the screen or click the top Cerolingo bar to minimize or expand it.
 3. Before using **Lesson loop** or **XP Farming** for the first time, complete one story lesson so the extension can store the required story ID and URL.
 4. Open **Settings** in the menu to enable or disable individual modules (`Auto solver`, `Blue animations`, `Audio blocking`, `Lessons highlighter`, `Legendary bypass`).
+
+## CerolingoBM
+
+Want to create Duolingo accounts in bulk, farm XP across a saved account list, or run headless browser sessions from a desktop app? Check out [CerolingoBM](https://ancymon.dev/CerolingoBM/) ([GitHub](https://github.com/ancym0n/CerolingoBM)) for Windows and Linux.

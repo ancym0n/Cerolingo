@@ -45,7 +45,13 @@ function spawnBotFxOverlay(el, mode = "click") {
 }
 
 async function botClick(el) {
-  if (!el) return;
+  if (!el || el.disabled || el.getAttribute?.("aria-disabled") === "true") {
+    return;
+  }
+  const now = Date.now();
+  if (now - Number(el._cerolingoLastBotClickAt || 0) < 180) return;
+  el._cerolingoLastBotClickAt = now;
+
   if (isFxEnabled()) {
     el.classList.add("cerolingo-bot-click");
     spawnBotFxOverlay(el, "click");

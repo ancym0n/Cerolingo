@@ -209,7 +209,7 @@ setInterval(() => {
 }, 500);
 
 chrome.storage.onChanged.addListener((changes) => {
-  if (changes.storyId || changes.url) {
+  if (changes.storyId || changes.url || changes.loop) {
     chrome.storage.local.get(["currentView"], (data) => {
       if (data.currentView === "xp" || data.currentView === "story") {
         loadView(data.currentView, false);
@@ -318,6 +318,9 @@ async function loadView(id, animate = true) {
 
     lessonLoopBtn.onclick = () => {
       const isRunning = lessonLoopBtn.getAttribute("running") !== "true";
+      if (isRunning && typeof resetActionGuardState === "function") {
+        resetActionGuardState();
+      }
       lessonLoopBtn.setAttribute("running", isRunning ? "true" : "false");
       chrome.storage.local.set({ loop: isRunning });
       lessonLoopBtn.textContent = isRunning
