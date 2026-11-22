@@ -26,6 +26,6 @@ Browser extension for automating Duolingo lessons, stories, and XP progression d
 3. Before using **Lesson loop** or **XP Farming** for the first time, complete one story lesson so the extension can store the required story ID and URL.
 4. Open **Settings** in the menu to enable or disable individual modules (`Auto solver`, `Blue animations`, `Audio blocking`, `Lessons highlighter`, `Legendary bypass`).
 
-## Cerolingo Bot Manager
+## CerolingoBM
 
-Want to create Duolingo accounts in bulk, farm XP across a saved account list, or run headless Playwright sessions from a desktop app? Check out [Cerolingo Bot Manager](https://ancymon.dev/Cerolingo-Bot-Manager/) ([GitHub](https://github.com/ancym0n/Cerolingo-Bot-Manager)) for Windows and Linux.
+Want to create Duolingo accounts in bulk, farm XP across a saved account list, or run headless browser sessions from a desktop app? Check out [CerolingoBM](https://ancymon.dev/CerolingoBM/) ([GitHub](https://github.com/ancym0n/CerolingoBM)) for Windows and Linux.
