@@ -1,41 +1,44 @@
-/* #banner {
-  width: 95%;
-  display: grid;
-  padding: 2rem 0;
-  justify-items: center;
-  align-items: center;
-  margin: 2.5% 2.5% 0 2.5%;
-  background-color: var(--alt-main-color);
-  border-radius: 20px;
-  border-bottom-right-radius: 0;
-  border-bottom-left-radius: 0;
-  position: relative;
-}
-
-#banner,
-#banner::before {
-  border-bottom-right-radius: 0 !important;
-  border-bottom-left-radius: 0 !important;
-}
-
-#banner::before {
-  content: "";
-  position: absolute;
-  background-color: var(--dark-main-color);
-  width: 100%;
-  height: 100%;
-  padding: 0.8%;
-  border-radius: 25px;
-  z-index: -1;
-} 
-*/
-
 #banner {
+  position: relative;
+  width: min(92%, 27rem);
   display: grid;
   justify-items: center;
   align-items: center;
+  background: none;
+  border: none;
+  box-shadow: none;
+  padding: 0.25rem 0 1.05rem;
+  opacity: 0;
+  animation: cerolingoLoadIn 0.45s var(--spring-ease) 0.04s forwards;
 }
 
-#banner > img {
-  width: 80%;
+#banner-logo {
+  background: none;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+#banner img {
+  width: 100%;
+  max-width: 27rem;
+  display: block;
+  filter: drop-shadow(0 0.3rem 0 rgba(9, 15, 19, 0.55));
+}
+
+#version {
+  position: absolute;
+  bottom: 0;
+  right: 0.2rem;
+  background: none;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: var(--main-color);
+  letter-spacing: 0.02em;
 }

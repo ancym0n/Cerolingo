@@ -3,90 +3,254 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&display=swap"
+    />
+    <link rel="preload" href="src/img/cerolingo-logo.png" as="image" />
     <link rel="stylesheet" href="src/css/main.css" />
-    <link rel="stylesheet" href="src/css/resize.css" />
     <link rel="stylesheet" href="src/css/content.css" />
     <link rel="stylesheet" href="src/css/banner.css" />
-    <link rel="stylesheet" href="src/css/hover.css" />
     <link rel="stylesheet" href="src/css/faq.css" />
+    <link rel="stylesheet" href="src/css/resize.css" />
+    <link rel="stylesheet" href="src/css/hover.css" />
+    <script>
+      document.documentElement.classList.add("is-booting");
+      // Failsafe: never keep the loader up if main.js fails to load
+      setTimeout(function () {
+        document.documentElement.classList.remove("is-booting");
+      }, 4000);
+    </script>
+    <link rel="stylesheet" href="src/css/loader.css" />
+    <script src="src/js/main.js" defer></script>
     <link
       rel="shortcut icon"
       href="src/img/cerolingo-logo.png"
       type="image/x-icon"
     />
     <title>Cerolingo</title>
+    <meta
+      name="description"
+      content="Duolingo utility extension with an auto-solver, XP farming, and in-page mod menu."
+    />
+    <meta name="theme-color" content="#6877fe" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://ancymon.dev/Cerolingo/" />
+    <meta property="og:title" content="Cerolingo" />
+    <meta
+      property="og:description"
+      content="Duolingo utility extension with an auto-solver, XP farming, and in-page mod menu."
+    />
+    <meta
+      property="og:image"
+      content="https://ancymon.dev/Cerolingo/src/img/cerolingo-logo.png"
+    />
+    <meta name="twitter:card" content="summary" />
   </head>
   <body>
-    <section id="banner">
-      <img src="src/img/cerolingo-title.png" alt="" />
-    </section>
-    <section id="content">
-      <h1>Download now!</h1>
-      <a
-        href="https://chromewebstore.google.com/detail/apgkphplddmjkoogmoijendkdjaaeiii?utm_source=item-share-cb"
-        >Chrome Web Store</a
-      >
-      <a href="https://addons.mozilla.org/firefox/addon/cerolingo/"
-        >Firefox Add-on</a
-      >
-      <a href="https://github.com/ancym0n/Cerolingo">Source Code</a>
-    </section>
+    <div id="loader" role="status" aria-live="polite">
+      <div class="loader-stage">
+        <div class="loader-card">
+          <img class="loader-logo" src="src/img/cerolingo-logo.png" alt="" />
+          <div class="loader-shadow" aria-hidden="true"></div>
+          <div class="loader-bar" aria-hidden="true"><span></span></div>
+          <p class="loader-text">Loading Cerolingo…</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="hero">
+      <div class="hero-main">
+        <section id="banner">
+          <img src="src/img/cerolingo-title.png" alt="Cerolingo" />
+          <a
+            href="https://github.com/ancym0n/Cerolingo/releases"
+            target="_blank"
+            rel="noopener"
+            id="version"
+            aria-label="Latest GitHub release"
+          ></a>
+        </section>
+
+        <section id="content">
+          <h1>Download now!</h1>
+          <div id="stats" class="is-loading" aria-busy="true">
+            <div class="stat-skeletons" aria-hidden="true">
+              <span class="stat-skeleton" style="--w: 6.2rem"></span>
+              <span class="stat-skeleton" style="--w: 8.4rem"></span>
+              <span class="stat-skeleton" style="--w: 5.6rem"></span>
+              <span class="stat-skeleton" style="--w: 6rem"></span>
+              <span class="stat-skeleton" style="--w: 6.2rem"></span>
+            </div>
+            <span id="active-users" class="stat-item" hidden></span>
+            <span id="total-downloads" class="stat-item" hidden></span>
+            <a
+              id="github-stars"
+              class="stat-item"
+              href="https://github.com/ancym0n/Cerolingo/stargazers"
+              target="_blank"
+              rel="noopener"
+              hidden
+            ></a>
+            <a
+              id="chrome-rating"
+              class="stat-item"
+              href="https://chromewebstore.google.com/detail/cerolingo/apgkphplddmjkoogmoijendkdjaaeiii/reviews"
+              target="_blank"
+              rel="noopener"
+              hidden
+            ></a>
+            <a
+              id="firefox-rating"
+              class="stat-item"
+              href="https://addons.mozilla.org/firefox/addon/cerolingo/reviews/"
+              target="_blank"
+              rel="noopener"
+              hidden
+            ></a>
+          </div>
+          <div>
+            <a
+              href="https://chromewebstore.google.com/detail/cerolingo/apgkphplddmjkoogmoijendkdjaaeiii"
+              target="_blank"
+              rel="noopener"
+              >Chrome Web Store</a
+            >
+            <a
+              href="https://addons.mozilla.org/firefox/addon/cerolingo/"
+              target="_blank"
+              rel="noopener"
+              >Firefox Add-ons</a
+            >
+            <a
+              href="https://github.com/ancym0n/Cerolingo"
+              target="_blank"
+              rel="noopener"
+              >Github</a
+            >
+          </div>
+        </section>
+      </div>
+
+      <div id="scroll-cue-wrap">
+        <a href="#faq" id="scroll-cue" aria-label="Scroll down to FAQ">
+          <span>FAQ</span>
+          <svg
+            class="scroll-cue-arrow"
+            viewBox="0 0 24 24"
+            width="18"
+            height="18"
+            aria-hidden="true"
+          >
+            <path
+              d="M6 9l6 6 6-6"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="3.2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </a>
+      </div>
+    </div>
+
     <section id="faq">
       <h1>FAQ</h1>
 
       <div>
         <h2>1. What is your Privacy Policy?</h2>
         <p>
-          Cerolingo respects user privacy. The extension does not collect,
+          Cerolingo respects your privacy. The extension does not collect,
           store, or transmit any personal data, account credentials, or browsing
-          history. All configuration settings are kept strictly on your local
-          device using local browser storage (chrome.storage.local). No data is
-          ever synced to cloud servers, tracked, or shared with third parties.
-          <a href="privacy">View Privacy Policy</a>
+          history. All settings are saved locally on your device using browser
+          storage (<i>chrome.storage.local</i>) and are never sent to external
+          servers or shared with third parties.
         </p>
+        <a href="privacy">View Privacy Policy</a>
       </div>
 
       <div>
         <h2>2. What is Cerolingo?</h2>
         <p>
-          Cerolingo is a lightweight browser extension designed as an automation
-          and customization utility for Duolingo, running directly inside your
-          web browser to streamline your learning experience.
+          Cerolingo is a browser extension built to automate lessons and stories
+          on Duolingo. Unlike older standalone tools, it runs directly inside
+          your web browser and integrates into the Duolingo interface.
         </p>
       </div>
 
       <div>
         <h2>3. What are its main features?</h2>
         <p>
-          Cerolingo includes an <strong>Auto-Answer Bot</strong> for story
-          lessons, an instant <strong>Audio Blocking</strong> mode to skip
-          talking animations, <strong>Story Map Highlighting</strong>, a
-          <strong>Legendary Lesson Bypass</strong>, a
-          <strong>Point Exploit</strong>, and a full
-          <strong>All-in-One Mod Menu</strong> to control everything directly on
-          the page.
+          Cerolingo includes an <strong>Auto Solver</strong> for both standard
+          lessons and stories, optional <strong>Blue Animations</strong> for
+          automated actions, <strong>Audio Blocking</strong> to skip spoken
+          dialogue delays, a <strong>Lessons Highlighter</strong> on the
+          learning path, a <strong>Legendary Bypass</strong>, and built-in
+          <strong>Lesson Loop</strong> and <strong>XP Farming</strong> modes.
         </p>
       </div>
 
       <div>
         <h2>4. How do I use the Mod Menu?</h2>
         <p>
-          The Mod Menu overlays directly on Duolingo so you can toggle modules
-          and change settings without opening your browser's extension popup.
-          You can double-click the title bar anytime to minimize or hide the
-          menu, and drag it around smoothly on both desktop and mobile screens.
+          The Mod Menu appears directly on the Duolingo page so you can switch
+          modes and adjust settings without opening the extension popup. You can
+          click the top title bar at any time to minimize the menu, or drag it
+          anywhere on your screen on both desktop and mobile.
         </p>
       </div>
 
       <div>
         <h2>5. Which platforms are supported?</h2>
         <p>
-          Cerolingo is available as a browser extension for Google Chrome,
-          Mozilla Firefox (desktop), and Firefox for Android mobile. It fully
-          supports both <i>duolingo.com</i> and the Chinese version,
-          <i>duolingo.cn</i>.
+          Cerolingo is available for Google Chrome, other Chromium-based
+          browsers, Mozilla Firefox on desktop, and Firefox for Android. It
+          supports both <i>duolingo.com</i> and <i>duolingo.cn</i>.
         </p>
       </div>
     </section>
+
+    <section id="promo">
+      <div>
+        <h2>Need bulk accounts or desktop automation?</h2>
+        <p>
+          Want to create Duolingo accounts in bulk, farm XP across a saved
+          account list, or run headless Playwright sessions from a desktop app?
+          Check out <strong>CerolingoBM</strong> for Windows and Linux.
+        </p>
+        <div class="promo-links">
+          <a
+            href="https://ancymon.dev/CerolingoBM/"
+            target="_blank"
+            rel="noopener"
+            >CerolingoBM Website</a
+          >
+          <a
+            href="https://github.com/ancym0n/CerolingoBM"
+            target="_blank"
+            rel="noopener"
+            >GitHub</a
+          >
+        </div>
+      </div>
+    </section>
+
+    <footer id="credit">
+      Made by
+      <a href="https://github.com/ancym0n" target="_blank" rel="noopener"
+        >ancymon</a
+      >
+      <span class="credit-sep">·</span>
+      <a
+        href="https://github.com/ancym0n/Cerolingo/issues"
+        target="_blank"
+        rel="noopener"
+        class="report-link"
+        >Report a bug</a
+      >
+    </footer>
   </body>
 </html>

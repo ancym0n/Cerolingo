@@ -3,12 +3,28 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&display=swap"
+    />
+    <link rel="preload" href="../src/img/cerolingo-logo.png" as="image" />
     <link rel="stylesheet" href="../src/css/main.css" />
-    <link rel="stylesheet" href="../src/css/resize.css" />
     <link rel="stylesheet" href="../src/css/content.css" />
-    <link rel="stylesheet" href="../src/css/hover.css" />
-    <link rel="stylesheet" href="../src/css/privacy.css" />
     <link rel="stylesheet" href="../src/css/banner.css" />
+    <link rel="stylesheet" href="../src/css/privacy.css" />
+    <link rel="stylesheet" href="../src/css/resize.css" />
+    <link rel="stylesheet" href="../src/css/hover.css" />
+    <script>
+      document.documentElement.classList.add("is-booting");
+      // Failsafe: never keep the loader up if main.js fails to load
+      setTimeout(function () {
+        document.documentElement.classList.remove("is-booting");
+      }, 4000);
+    </script>
+    <link rel="stylesheet" href="../src/css/loader.css" />
+    <script src="../src/js/main.js" defer></script>
     <link
       rel="shortcut icon"
       href="../src/img/cerolingo-logo.png"
@@ -17,79 +33,148 @@
     <title>Cerolingo</title>
   </head>
   <body>
+    <div id="loader" role="status" aria-live="polite">
+      <div class="loader-stage">
+        <div class="loader-card">
+          <img class="loader-logo" src="../src/img/cerolingo-logo.png" alt="" />
+          <div class="loader-shadow" aria-hidden="true"></div>
+          <div class="loader-bar" aria-hidden="true"><span></span></div>
+          <p class="loader-text">Loading Cerolingo…</p>
+        </div>
+      </div>
+    </div>
+
     <section id="banner">
-      <img src="../src/img/cerolingo-title.png" alt="" />
+      <a href="../" id="banner-logo" aria-label="Back to home">
+        <img src="../src/img/cerolingo-title.png" alt="Cerolingo" />
+      </a>
+      <a
+        href="https://github.com/ancym0n/Cerolingo/releases"
+        target="_blank"
+        rel="noopener"
+        id="version"
+        aria-label="Latest GitHub release"
+      ></a>
     </section>
+
     <section id="content">
       <h1>Download now!</h1>
-      <a
-        href="https://chromewebstore.google.com/detail/apgkphplddmjkoogmoijendkdjaaeiii?utm_source=item-share-cb"
-        >Chrome Web Store</a
-      >
-      <a href="https://addons.mozilla.org/firefox/addon/cerolingo/"
-        >Firefox Add-on</a
-      >
-      <a href="https://github.com/ancym0n/Cerolingo">Source Code</a>
+      <div id="stats" hidden>
+        <span id="active-users" class="stat-item" hidden></span>
+        <span id="total-downloads" class="stat-item" hidden></span>
+        <a
+          id="github-stars"
+          class="stat-item"
+          href="https://github.com/ancym0n/Cerolingo/stargazers"
+          target="_blank"
+          rel="noopener"
+          hidden
+        ></a>
+        <a
+          id="chrome-rating"
+          class="stat-item"
+          href="https://chromewebstore.google.com/detail/cerolingo/apgkphplddmjkoogmoijendkdjaaeiii/reviews"
+          target="_blank"
+          rel="noopener"
+          hidden
+        ></a>
+        <a
+          id="firefox-rating"
+          class="stat-item"
+          href="https://addons.mozilla.org/firefox/addon/cerolingo/reviews/"
+          target="_blank"
+          rel="noopener"
+          hidden
+        ></a>
+      </div>
+      <div>
+        <a
+          href="https://chromewebstore.google.com/detail/cerolingo/apgkphplddmjkoogmoijendkdjaaeiii"
+          target="_blank"
+          rel="noopener"
+          >Chrome Web Store</a
+        >
+        <a
+          href="https://addons.mozilla.org/firefox/addon/cerolingo/"
+          target="_blank"
+          rel="noopener"
+          >Firefox Add-ons</a
+        >
+        <a
+          href="https://github.com/ancym0n/Cerolingo"
+          target="_blank"
+          rel="noopener"
+          >Github</a
+        >
+      </div>
     </section>
+
     <section id="privacy">
       <h1>Privacy Policy</h1>
+      <p id="last-updated" aria-busy="true">
+        Last updated:
+        <a
+          id="last-updated-date"
+          data-fallback="2026-07-16T21:39:14+02:00"
+          href="https://github.com/ancym0n/Cerolingo/commits/page"
+          target="_blank"
+          rel="noopener"
+          ><span class="date-skeleton" aria-hidden="true"></span></a
+        >
+      </p>
 
       <div>
         <h2>1. Overview of Data Practices</h2>
         <p>
-          Cerolingo is committed to maintaining complete user privacy. The
-          extension functions strictly as a client-side utility. It does not
-          collect, intercept, track, or transmit any personal data, account
-          credentials, browsing histories, or telemetry metrics to external
-          servers.
+          Cerolingo is designed with user privacy in mind. The extension
+          operates strictly on the client side inside your browser. It does not
+          collect, log, intercept, or transmit personal information, login
+          credentials, or browsing activity to any external server.
         </p>
       </div>
 
       <div>
         <h2>2. Local Storage & Scope of Execution</h2>
         <p>
-          The extension uses local storage privileges
-          (<i>chrome.storage.local</i>) solely to save your preferences and
-          configuration states (such as active module toggles and menu
-          positions) directly on your device. Cerolingo does not sync data to
-          cloud servers or browser sync profiles. All DOM manipulations,
-          main-world script injections, and automation tasks execute entirely
-          within your web browser environment.
+          The extension uses local browser storage (<i>chrome.storage.local</i>
+          and <i>localStorage</i>) only to remember your preferences, such as
+          enabled features, menu position, and the last completed story URL.
+          This data stays on your device and is never uploaded to external
+          servers. All automation and page modifications happen locally within
+          your browser tab.
         </p>
       </div>
 
       <div>
         <h2>3. Third-Party Interactions</h2>
         <p>
-          Cerolingo interacts directly and exclusively with official Duolingo
-          domains (<i>duolingo.com</i> and <i>duolingo.cn</i>) to process lesson
-          automation. The extension contains zero integrations with third-party
-          analytics services, tracking scripts, advertising networks, or remote
-          telemetry servers.
+          Cerolingo only runs on official Duolingo domains (<i>duolingo.com</i>
+          and <i>duolingo.cn</i>). It does not include any third-party
+          analytics, tracking scripts, advertising libraries, or external
+          network connections.
         </p>
       </div>
 
       <div>
         <h2>4. Core Compliance Declarations</h2>
         <p>
-          In accordance with browser web store policies and global privacy
-          standards, Cerolingo explicitly guarantees:
+          In accordance with browser store policies and privacy regulations,
+          Cerolingo guarantees the following:
         </p>
         <ul>
           <li>
-            <strong>Zero Data Collection or Sale:</strong> User data and
-            configuration settings are never collected, sold, traded, or shared
-            with external entities.
+            <strong>No Data Collection or Sale:</strong> Personal information
+            and user settings are never collected, sold, or shared with third
+            parties.
           </li>
           <li>
-            <strong>Strict Functional Scope:</strong> All extension permissions
-            are used exclusively to deliver the in-page mod menu, audio
-            blocking, and automation features.
+            <strong>Single Purpose Scope:</strong> Requested browser permissions
+            are used solely to provide the in-page menu and lesson automation on
+            Duolingo.
           </li>
           <li>
-            <strong>No User Tracking or Profiling:</strong> The extension
-            operates without analytics or tracking scripts, ensuring your
-            activity remains completely private.
+            <strong>No Tracking:</strong> The extension runs without analytics
+            or background tracking, keeping your browsing activity private.
           </li>
         </ul>
       </div>
@@ -97,12 +182,28 @@
       <div>
         <h2>5. Changes to This Policy</h2>
         <p>
-          This Privacy Policy may be updated periodically to reflect minor
-          technical or functional adjustments. Any modifications will be posted
-          directly to this page. Continued use of the extension following any
-          updates constitutes acceptance of the revised policy.
+          This Privacy Policy may be updated from time to time if new features
+          or technical changes are introduced. Any updates will be published on
+          this page.
         </p>
       </div>
+
+      <a href="../" id="back-home">Back to Home</a>
     </section>
+
+    <footer id="credit">
+      Made by
+      <a href="https://github.com/ancym0n" target="_blank" rel="noopener"
+        >ancymon</a
+      >
+      <span class="credit-sep">·</span>
+      <a
+        href="https://github.com/ancym0n/Cerolingo/issues"
+        target="_blank"
+        rel="noopener"
+        class="report-link"
+        >Report a bug</a
+      >
+    </footer>
   </body>
 </html>

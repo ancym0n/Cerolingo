@@ -1,40 +1,82 @@
-#faq {
+#faq,
+#promo {
   width: 95%;
-  margin: 0 2.5%;
   display: grid;
   justify-items: center;
   align-items: center;
-  position: relative;
-  padding: 2rem 0;
-  border-radius: 20px;
+  gap: 1.1rem;
+  padding: 0.5rem 0;
+  scroll-margin-top: 1.75rem;
   text-align: center;
-  line-height: 0.7;
-  opacity: 0.8;
 }
 
 #faq h1 {
-  margin-bottom: 1rem;
+  margin-bottom: 0.35rem;
+  opacity: 0;
+  animation: cerolingoLoadIn 0.45s var(--spring-ease) 0.18s forwards;
 }
 
-#faq h2 {
-  margin: 1rem 0;
+#faq h2,
+#promo h2 {
+  margin-bottom: 0.55rem;
+  color: var(--title-color);
 }
 
-#faq li {
-  width: 80%;
-}
-
-#faq > div {
+#faq > div,
+#promo > div {
+  width: 100%;
+  background-color: var(--panel-bg);
+  border: 2px solid var(--dark-main-color);
+  border-radius: 16px;
+  box-shadow: 0 0.38rem 0 0 var(--dark-main-color);
+  padding: 1.35rem 1.65rem 1.5rem;
   text-align: center;
-  width: 80%;
+  opacity: 0;
+  animation: cerolingoLoadIn 0.45s var(--spring-ease) forwards;
+  transition:
+    transform 0.3s var(--spring-ease),
+    box-shadow 0.3s var(--spring-ease);
 }
 
-:has(a[href="privacy"]) {
-  display: grid;
-  justify-items: center;
+#faq > div:nth-of-type(1) {
+  animation-delay: 0.22s;
+}
+
+#faq > div:nth-of-type(2) {
+  animation-delay: 0.28s;
+}
+
+#faq > div:nth-of-type(3) {
+  animation-delay: 0.34s;
+}
+
+#faq > div:nth-of-type(4) {
+  animation-delay: 0.4s;
+}
+
+#faq > div:nth-of-type(5) {
+  animation-delay: 0.46s;
+}
+
+#promo > div {
+  animation-delay: 0.5s;
 }
 
 a[href="privacy"] {
-  display: block;
-  max-width: 20rem;
+  display: inline-flex;
+  max-width: 16rem;
+  margin-top: 0.9rem;
+}
+
+.promo-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.65rem;
+  margin-top: 0.9rem;
+  width: 100%;
+}
+
+.promo-links a {
+  margin: 0;
 }
