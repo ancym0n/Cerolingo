@@ -112,6 +112,17 @@ a:active {
   transform: translateY(1px) scale(0.99);
 }
 
+#tagline {
+  text-align: center;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--main-color);
+  margin-top: -7px;
+  letter-spacing: 0.01em;
+  opacity: 0;
+  animation: cerolingoLoadIn 0.35s var(--spring-ease) 0.05s forwards;
+}
+
 .extension-links {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -152,7 +163,7 @@ a:active {
     0 0.42rem 0 0 var(--dark-main-color),
     0 0 12px 1px rgba(104, 119, 254, 0.35);
   opacity: 0;
-  animation: cerolingoLoadIn 0.35s var(--spring-ease) 0.14s forwards;
+  animation: cerolingoLoadIn 0.35s var(--spring-ease) 0.13s forwards;
 }
 
 #github:hover {
@@ -167,6 +178,50 @@ a:active {
   -webkit-user-drag: none;
 }
 
+.review-section {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-top: 2px;
+  opacity: 0;
+  animation: cerolingoLoadIn 0.35s var(--spring-ease) 0.17s forwards;
+}
+
+.review-heading {
+  text-align: center;
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: var(--main-color);
+  letter-spacing: 0.02em;
+}
+
+.review-links {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.review-links a {
+  background-color: var(--panel-bg);
+  border-color: var(--dark-main-color);
+  color: var(--main-color);
+  padding: 8px 6px;
+  font-size: 0.78rem;
+  box-shadow: 0 0.32rem 0 0 var(--dark-main-color);
+}
+
+.review-links a:hover {
+  background-color: #1f323b;
+  color: var(--title-color);
+  transform: translateY(-2px);
+  box-shadow: 0 calc(0.32rem + 2px) 0 0 var(--dark-main-color);
+}
+
+.review-links a:active {
+  transform: translateY(2px);
+  box-shadow: 0 0.14rem 0 0 var(--dark-main-color);
+}
+
 #credit {
   display: flex;
   align-items: center;
@@ -175,10 +230,10 @@ a:active {
   font-size: 0.71rem;
   font-weight: 800;
   color: var(--dark-main-color);
-  margin-top: 2px;
+  margin-top: 3px;
   white-space: nowrap;
   opacity: 0;
-  animation: cerolingoLoadIn 0.35s var(--spring-ease) 0.18s forwards;
+  animation: cerolingoLoadIn 0.35s var(--spring-ease) 0.21s forwards;
 }
 
 #version {
