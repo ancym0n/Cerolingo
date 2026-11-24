@@ -3,36 +3,48 @@ loadedLog("bypass");
 function injectLegendaryBypass() {
   if (
     window.location.href.includes("/lesson") ||
-    document.getElementById("legendaryBypass")
+    window.location.href.includes("/practice")
   ) {
+    document.getElementById("legendaryBypass")?.remove();
     return;
   }
 
-  const practiceButton = document.querySelector(
-    "a[href*=lesson]:not([href*=test])",
-  );
-  if (!practiceButton) return;
-
   chrome.storage.local.get(["legendaryBypass"], (data) => {
-    if (!data.legendaryBypass || document.getElementById("legendaryBypass")) {
+    const existing = document.getElementById("legendaryBypass");
+    if (data.legendaryBypass === false) {
+      existing?.remove();
       return;
     }
+    if (existing) return;
+
+    const practiceButton = document.querySelector(
+      'a[href*="/lesson/"][href*="/level/"]:not([href*="test"]):not(#legendaryBypass)',
+    );
+    if (!practiceButton) return;
+
+    const lessonHref = practiceButton.getAttribute("href") || "";
+    const legendaryHref = lessonHref.replace("/level/", "/legendary/");
+    if (legendaryHref === lessonHref) return;
 
     const legendaryButton = document.querySelector(
       '[data-test*="legendary-node-button"]',
     );
     const bypassBtn = practiceButton.cloneNode(true);
 
-    bypassBtn.innerText = "Legendary Bypass +<40px";
+    bypassBtn.innerText = "Legendary Bypass +40 XP";
     bypassBtn.id = "legendaryBypass";
     bypassBtn.removeAttribute("type");
-
-    const lessonHref = practiceButton.getAttribute("href");
-    bypassBtn.setAttribute("href", lessonHref.replace("level", "legendary"));
+    bypassBtn.setAttribute("href", legendaryHref);
 
     const target = legendaryButton || practiceButton;
-    target.parentNode.appendChild(bypassBtn);
+    target.parentNode?.appendChild(bypassBtn);
   });
 }
 
-setInterval(injectLegendaryBypass, 100);
+chrome.storage.onChanged.addListener((changes) => {
+  if (changes.legendaryBypass) {
+    injectLegendaryBypass();
+  }
+});
+
+setInterval(injectLegendaryBypass, 150);

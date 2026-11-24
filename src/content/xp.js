@@ -4,6 +4,8 @@ let loopExploitEnabled = false;
 let loopExploitInterval = null;
 let loopNum = 0;
 let lastKnownTotalXp = null;
+let lastKnownFromLanguage = "en";
+let lastKnownLearningLanguage = "en";
 
 function getAuthData() {
   const token = document.cookie.match(/jwt_token=([^;]*)/)?.[1] || "";
@@ -61,7 +63,7 @@ async function refreshXpStatusBox() {
 
   try {
     const res = await fetch(
-      `${window.location.origin}/2017-06-30/users/${userId}?fields=totalXp&_=${Date.now()}`,
+      `${window.location.origin}/2017-06-30/users/${userId}?fields=totalXp,fromLanguage,learningLanguage&_=${Date.now()}`,
       {
         method: "GET",
         headers: {
@@ -75,6 +77,12 @@ async function refreshXpStatusBox() {
 
     if (!res.ok) return;
     const data = await res.json();
+    if (typeof data.fromLanguage === "string" && data.fromLanguage) {
+      lastKnownFromLanguage = data.fromLanguage;
+    }
+    if (typeof data.learningLanguage === "string" && data.learningLanguage) {
+      lastKnownLearningLanguage = data.learningLanguage;
+    }
     if (typeof data.totalXp === "number") {
       lastKnownTotalXp = data.totalXp;
       renderXpBadge();
@@ -92,7 +100,7 @@ function givePoints() {
     awardXp: true,
     completedBonusChallenge: true,
     dailyRefreshInfo: null,
-    fromLanguage: "en",
+    fromLanguage: lastKnownFromLanguage || "en",
     hasXpBoost: true,
     illustrationFormat: "svg",
     isFeaturedStoryInPracticeHub: false,
@@ -100,7 +108,7 @@ function givePoints() {
     isListenModeReAdoption: false,
     isV2Redo: true,
     isV2Story: true,
-    learningLanguage: "en",
+    learningLanguage: lastKnownLearningLanguage || "en",
     masterVersion: false,
     maxScore: 6,
     mode: "READ",
@@ -142,28 +150,38 @@ function givePoints() {
 function loopPointExploit(el) {
   loopExploitEnabled = !loopExploitEnabled;
 
-  el.setAttribute("running", loopExploitEnabled ? "true" : "false");
-  el.innerText = loopExploitEnabled ? "Stop loop" : "Start loop";
+  if (loopExploitInterval) {
+    clearInterval(loopExploitInterval);
+    loopExploitInterval = null;
+  }
 
   if (!loopExploitEnabled) {
-    clearInterval(loopExploitInterval);
+    loopNum = 0;
+    el.setAttribute("running", "false");
+    el.innerText = "Start loop";
     return;
   }
+
+  loopNum = 0;
+  el.setAttribute("running", "true");
+  el.innerText = "Stop loop";
 
   loopExploitInterval = setInterval(() => {
     if (!loopExploitEnabled) {
       clearInterval(loopExploitInterval);
+      loopExploitInterval = null;
       return;
     }
 
     loopNum += 1;
     givePoints();
 
-    el.innerText = "Stop loop";
+    const btn = document.getElementById(`${modMenuId}Loop`) || el;
+    btn.innerText = "Stop loop";
 
     const loopCount = document.createElement("p");
     loopCount.id = `${modMenuId}LoopCount`;
     loopCount.textContent = `[${loopNum}] ~${loopNum * 90} XP`;
-    el.appendChild(loopCount);
+    btn.appendChild(loopCount);
   }, 1000);
 }

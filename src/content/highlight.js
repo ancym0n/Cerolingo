@@ -17,7 +17,9 @@ button[data-test*="skill-path-level"]:has(svg):has(img[src*=".svg"]):not(
 ),
 button[data-test*="skill-path-level"]:has(+ div):has(img[src*=".svg"]):not(
   :has(img[src*="3ea75bf2164eed9218a7163be002af82.svg"])
-) {
+),
+button[data-test*="skill-path-level-duo_radio"]:has(svg),
+button[data-test*="skill-path-level-story"]:has(svg) {
   --path-level-color: var(--dark-main-color) !important;
 }
 
@@ -29,14 +31,18 @@ button[data-test*="skill-path-level"]:has(svg):has(img[src*=".svg"]):not(
 )::after,
 button[data-test*="skill-path-level"]:has(+ div):has(img[src*=".svg"]):not(
   :has(img[src*="3ea75bf2164eed9218a7163be002af82.svg"])
-)::after {
+)::after,
+button[data-test*="skill-path-level-duo_radio"]:has(svg)::after,
+button[data-test*="skill-path-level-story"]:has(svg)::after {
   box-shadow:
     0 8px 0 rgb(var(--color-black), 0.2),
     0 8px 0 var(--path-level-color) !important;
 }
 
 button[aria-label="Story"] svg,
-button[data-test*="skill-path-level"]:has(img[src*=".svg"]) svg {
+button[data-test*="skill-path-level"]:has(img[src*=".svg"]) svg,
+button[data-test*="skill-path-level-duo_radio"] svg,
+button[data-test*="skill-path-level-story"] svg {
   color: var(--alt-main-color) !important;
 }
 `;
@@ -44,8 +50,12 @@ button[data-test*="skill-path-level"]:has(img[src*=".svg"]) svg {
 function updateStoryHighlight() {
   chrome.storage.local.get(["storyHighlight", "botHighlight"], (data) => {
     const existing = document.getElementById(storyHighlightId);
-    if (data.storyHighlight) {
-      if (!existing) document.head.appendChild(storyHighlightStyle);
+    if (data.storyHighlight !== false) {
+      if (!existing) {
+        (document.head || document.documentElement)?.appendChild(
+          storyHighlightStyle,
+        );
+      }
     } else if (existing) {
       existing.remove();
     }
@@ -57,6 +67,12 @@ function updateStoryHighlight() {
     }
   });
 }
+
+chrome.storage.onChanged.addListener((changes) => {
+  if (changes.storyHighlight || changes.botHighlight) {
+    updateStoryHighlight();
+  }
+});
 
 updateStoryHighlight();
 setInterval(updateStoryHighlight, 500);

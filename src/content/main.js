@@ -54,8 +54,12 @@ const ACTION_GUARD_WINDOW_MS = 12000;
 const ACTION_GUARD_MAX_NAVIGATIONS = 3;
 const ACTION_GUARD_COOLDOWN_MS = 3500;
 const ACTION_GUARD_PROMO_COOLDOWN_MS = 1800;
+const AUTO_PATH_LEARN_SETTLE_MS = 1800;
 
 let lastRedirectAttemptAt = 0;
+let learnEnteredAt = window.location.pathname.startsWith("/learn")
+  ? Date.now()
+  : 0;
 
 function readActionGuardState() {
   try {
@@ -83,6 +87,26 @@ function resetActionGuardState() {
   writeActionGuardState({ timestamps: [], trippedAt: 0 });
 }
 
+function isLessonUrl(href) {
+  if (!href || typeof href !== "string") return false;
+  let pathname = "";
+  try {
+    pathname = new URL(href, window.location.origin).pathname;
+  } catch {
+    pathname = href;
+  }
+  return (
+    pathname.includes("/lesson") ||
+    pathname.includes("/stories") ||
+    pathname.includes("/story") ||
+    pathname === "/practice" ||
+    pathname.startsWith("/practice/") ||
+    pathname.includes("/mistakes-review") ||
+    pathname.includes("/skill/") ||
+    pathname.includes("/alphabets")
+  );
+}
+
 function canExecuteNavigationAction(targetUrl) {
   if (!targetUrl || typeof targetUrl !== "string") return false;
 
@@ -94,11 +118,7 @@ function canExecuteNavigationAction(targetUrl) {
   }
 
   if (parsedTarget.origin !== window.location.origin) return false;
-  if (
-    !parsedTarget.pathname.includes("/lesson") &&
-    !parsedTarget.pathname.includes("/stories") &&
-    !parsedTarget.pathname.includes("/story")
-  ) {
+  if (!isLessonUrl(parsedTarget.href)) {
     return false;
   }
 
@@ -116,10 +136,10 @@ function canExecuteNavigationAction(targetUrl) {
 
   if (recent.length >= ACTION_GUARD_MAX_NAVIGATIONS) {
     writeActionGuardState({ timestamps: recent, trippedAt: now });
-    chrome.storage.local.set({ loop: false }, () => {
+    chrome.storage.local.set({ loop: false, autoPath: false }, () => {
       cerolingoLog(
         "guard",
-        "Navigation rate limit exceeded — Lesson Loop auto-disabled to prevent refresh loop",
+        "Navigation rate limit exceeded: Lesson Loop / Auto-Path auto-disabled to prevent refresh loop",
       );
     });
     return false;
@@ -131,7 +151,11 @@ function canExecuteNavigationAction(targetUrl) {
   return true;
 }
 
-function canClickActionTarget(el, cooldownMs = ACTION_GUARD_PROMO_COOLDOWN_MS) {
+function canClickActionTarget(
+  el,
+  cooldownMs = ACTION_GUARD_PROMO_COOLDOWN_MS,
+  ignoreVisibility = false,
+) {
   if (
     !el ||
     el.disabled ||
@@ -144,13 +168,19 @@ function canClickActionTarget(el, cooldownMs = ACTION_GUARD_PROMO_COOLDOWN_MS) {
   const lastClicked = Number(el._cerolingoActionAt || 0);
   if (now - lastClicked < cooldownMs) return false;
 
-  const style = window.getComputedStyle(el);
-  if (
-    style.display === "none" ||
-    style.visibility === "hidden" ||
-    style.pointerEvents === "none"
-  ) {
-    return false;
+  if (!ignoreVisibility) {
+    const style = window.getComputedStyle(el);
+    if (
+      style.display === "none" ||
+      style.visibility === "hidden" ||
+      parseFloat(style.opacity) === 0 ||
+      style.pointerEvents === "none"
+    ) {
+      return false;
+    }
+
+    const rect = el.getBoundingClientRect();
+    if (rect.width <= 0 || rect.height <= 0) return false;
   }
 
   el._cerolingoActionAt = now;
@@ -185,45 +215,129 @@ function findStoryJsonUrl() {
   );
 }
 
-function dismissMobileAppPromo() {
+const OVERLAY_DISMISS_DATA_TESTS = [
+  "#onetrust-accept-btn-handler",
+  '[data-test="plus-no-thanks"]',
+  '[data-test="notification-drawer-no-thanks-button"]',
+  '[data-test="practice-reminder-no-thanks"]',
+  '[data-test="streak-freeze-no-thanks"]',
+];
+
+const OVERLAY_DISMISS_TEXTS = new Set([
+  "continue in browser",
+  "kontynuuj w przeglądarce",
+  "weiter im browser",
+  "no thanks",
+  "nie, dziękuję",
+  "nein danke",
+  "no, gracias",
+  "non merci",
+  "maybe later",
+  "może później",
+  "not now",
+  "nie teraz",
+  "i'll do it later",
+  "got it",
+  "claim",
+  "claim xp",
+  "continue",
+  "kontynuuj",
+  "dalej",
+  "weiter",
+]);
+
+function dismissMobileAppPromo(allowGeneralOverlays = false) {
   const overlays = document.getElementById("overlays");
-  if (!overlays) return;
 
-  const appLink = overlays.querySelector(
-    'a[href*="mobile_web_to_app_conversion"], a[href*="adj.st"]',
-  );
-  const promoImg = overlays.querySelector(
-    'img[src*="617c9bcf01673a55c983c7d0a14a6bd4.svg"]',
-  );
-  const container =
-    appLink?.closest('#overlays > div') ||
-    promoImg?.closest('#overlays > div') ||
-    appLink?.parentElement ||
-    promoImg?.parentElement ||
-    null;
+  // Dismiss mobile app promo
+  if (overlays) {
+    const appLink = overlays.querySelector(
+      'a[href*="mobile_web_to_app_conversion"], a[href*="adj.st"]',
+    );
+    const promoImg = overlays.querySelector(
+      'img[src*="617c9bcf01673a55c983c7d0a14a6bd4.svg"]',
+    );
+    const container =
+      appLink?.closest("#overlays > div") ||
+      promoImg?.closest("#overlays > div") ||
+      appLink?.parentElement ||
+      promoImg?.parentElement ||
+      null;
 
-  if (container) {
-    const continueBtn = container.querySelector("button");
-    if (canClickActionTarget(continueBtn)) {
-      continueBtn.click();
-      return;
-    }
-  }
-
-  const buttons = overlays.querySelectorAll("button");
-  for (const btn of buttons) {
-    const text = (btn.innerText || btn.textContent || "").trim().toLowerCase();
-    if (
-      text === "continue in browser" ||
-      text === "kontynuuj w przeglądarce" ||
-      text === "weiter im browser"
-    ) {
-      if (canClickActionTarget(btn)) {
-        btn.click();
+    if (container) {
+      const continueBtn = container.querySelector("button");
+      if (canClickActionTarget(continueBtn, ACTION_GUARD_PROMO_COOLDOWN_MS, true)) {
+        continueBtn.click();
+        return true;
       }
-      return;
+    }
+
+    const buttons = overlays.querySelectorAll("button");
+    for (const btn of buttons) {
+      const text = (btn.innerText || btn.textContent || "").trim().toLowerCase();
+      if (
+        text === "continue in browser" ||
+        text === "kontynuuj w przeglądarce" ||
+        text === "weiter im browser"
+      ) {
+        if (canClickActionTarget(btn, ACTION_GUARD_PROMO_COOLDOWN_MS, true)) {
+          btn.click();
+          return true;
+        }
+        return false;
+      }
     }
   }
+
+  if (!allowGeneralOverlays || localStorage.getItem("autoSolver") === "false") {
+    return false;
+  }
+
+  // Dismiss promo / interstitial / cookie banners
+  for (const sel of OVERLAY_DISMISS_DATA_TESTS) {
+    const btn = document.querySelector(sel);
+    if (canClickActionTarget(btn)) {
+      btn.click();
+      return true;
+    }
+  }
+
+  // Dismiss blocking modals inside #overlays
+  if (overlays) {
+    const overlayButtons = overlays.querySelectorAll("button");
+    for (const btn of overlayButtons) {
+      if (btn.closest("#cerolingoModMenu")) continue;
+      const dt = btn.getAttribute("data-test") || "";
+      if (
+        dt === "quit-button" ||
+        dt === "purchase-button" ||
+        dt === "plus-offer-button"
+      ) {
+        continue;
+      }
+      const text = (btn.innerText || btn.textContent || "")
+        .replace(/\s+/g, " ")
+        .trim()
+        .toLowerCase();
+      if (OVERLAY_DISMISS_TEXTS.has(text)) {
+        if (canClickActionTarget(btn)) {
+          btn.click();
+          return true;
+        }
+      }
+    }
+  }
+
+  return false;
+}
+
+function shouldAutoDismissOverlays(isAutomatedLoop = false) {
+  const path = window.location.pathname;
+  if (isAutomatedLoop) return true;
+  if (path.startsWith("/shop") || path.startsWith("/practice-hub")) {
+    return false;
+  }
+  return path.startsWith("/learn") || isLessonUrl(window.location.href);
 }
 
 let promoDismissScheduled = false;
@@ -232,7 +346,7 @@ const overlayObserver = new MutationObserver(() => {
   promoDismissScheduled = true;
   requestAnimationFrame(() => {
     promoDismissScheduled = false;
-    dismissMobileAppPromo();
+    dismissMobileAppPromo(shouldAutoDismissOverlays(false));
   });
 });
 
@@ -241,6 +355,21 @@ if (document.documentElement) {
     childList: true,
     subtree: true,
   });
+}
+
+function tryOpenPathChest() {
+  const candidates = document.querySelectorAll(
+    'button[aria-label="Chest"]:not(:disabled), button[aria-label="Open chest"]:not(:disabled), button[aria-label*="chest" i]:not(:disabled), button[aria-label*="skrzyn" i]:not(:disabled), button[aria-label*="truhe" i]:not(:disabled), button[aria-label*="cofre" i]:not(:disabled), button[aria-label*="coffre" i]:not(:disabled)',
+  );
+  for (const chestBtn of candidates) {
+    if (chestBtn.closest("#cerolingoModMenu")) continue;
+    if (canClickActionTarget(chestBtn, 2200)) {
+      chestBtn.click();
+      cerolingoLog("path", "Opened path treasure chest");
+      return true;
+    }
+  }
+  return false;
 }
 
 function run() {
@@ -255,7 +384,7 @@ function run() {
 
   const href = window.location.href;
   const isStoryRoute = href.includes("/story") || href.includes("/stories");
-  if (href.includes("/lesson") || isStoryRoute) {
+  if (isLessonUrl(href)) {
     chrome.storage.local.set({
       url: href,
       isStoryUrl: isStoryRoute,
@@ -300,15 +429,12 @@ function run() {
 }
 
 setInterval(() => {
-  dismissMobileAppPromo();
-
   const href = window.location.href;
-  const inLesson =
-    href.includes("/lesson") ||
-    href.includes("/stories") ||
-    href.includes("/story");
+  const inLesson = isLessonUrl(href);
 
   if (inLesson) {
+    learnEnteredAt = 0;
+    dismissMobileAppPromo(shouldAutoDismissOverlays(false));
     wasInLesson = true;
     if (document.getElementById("CEROLINGO") === null) {
       run();
@@ -316,6 +442,9 @@ setInterval(() => {
   } else {
     if (wasInLesson) {
       wasInLesson = false;
+      learnEnteredAt = window.location.pathname.startsWith("/learn")
+        ? Date.now()
+        : 0;
       storyBotStarted = false;
       if (jsonInterval) {
         clearInterval(jsonInterval);
@@ -325,24 +454,58 @@ setInterval(() => {
       if (typeof stopStorySolver === "function") {
         stopStorySolver();
       }
+    } else if (window.location.pathname.startsWith("/learn")) {
+      if (!learnEnteredAt) learnEnteredAt = Date.now();
+    } else {
+      learnEnteredAt = 0;
     }
 
-    chrome.storage.local.get(["url", "loop", "isStoryUrl"], (data) => {
-      if (
-        data.loop === true &&
-        typeof data.url === "string" &&
-        (data.url.includes("/lesson") ||
-          data.url.includes("/stories") ||
-          data.url.includes("/story"))
-      ) {
-        const targetUrl =
-          data.isStoryUrl && data.url.includes("/level")
-            ? data.url.replace("/level", "/legendary")
-            : data.url;
-        if (canExecuteNavigationAction(targetUrl)) {
-          window.location.href = targetUrl;
+    chrome.storage.local.get(
+      ["url", "loop", "autoPath", "isStoryUrl"],
+      (data) => {
+        const automated = data.loop === true || data.autoPath === true;
+        const dismissed = dismissMobileAppPromo(
+          shouldAutoDismissOverlays(automated),
+        );
+        if (dismissed) {
+          if (learnEnteredAt) learnEnteredAt = Date.now();
+          return;
         }
-      }
-    });
+
+        if (data.autoPath === true) {
+          if (localStorage.getItem("autoSolver") === "false") return;
+          if (!window.location.pathname.startsWith("/learn")) return;
+          if (tryOpenPathChest()) {
+            learnEnteredAt = Date.now();
+            return;
+          }
+          if (
+            learnEnteredAt &&
+            Date.now() - learnEnteredAt < AUTO_PATH_LEARN_SETTLE_MS
+          ) {
+            return;
+          }
+          const nextUrl = `${window.location.origin}/lesson`;
+          if (canExecuteNavigationAction(nextUrl)) {
+            window.location.href = nextUrl;
+          }
+          return;
+        }
+
+        if (
+          data.loop === true &&
+          typeof data.url === "string" &&
+          isLessonUrl(data.url)
+        ) {
+          const targetUrl =
+            data.isStoryUrl && data.url.includes("/level")
+              ? data.url.replace("/level", "/legendary")
+              : data.url;
+          if (canExecuteNavigationAction(targetUrl)) {
+            window.location.href = targetUrl;
+          }
+        }
+      },
+    );
   }
 }, 500);

@@ -38,144 +38,976 @@
     var(--alt-main-color) !important;
 }
 
-@keyframes cerolingoBotPulse {
+@keyframes cerolingoSolvingFlow {
   0% {
-    transform: scale(1);
-  }
-  40% {
-    transform: scale(0.96);
+    background-position: 200% 0;
   }
   100% {
-    transform: scale(1);
+    background-position: -200% 0;
   }
 }
 
-@keyframes cerolingoOverlayPop {
+@keyframes cerolingoOverlayBloom {
   0% {
-    opacity: 0.9;
-    transform: scale(0.97);
+    opacity: 0;
+    transform: scale(0.95);
   }
-  35% {
-    opacity: 0.95;
-    transform: scale(1.01);
+  24% {
+    opacity: 1;
+    transform: scale(1.012);
   }
   100% {
     opacity: 0;
-    transform: scale(1.04);
+    transform: scale(1.055);
   }
 }
 
 @keyframes cerolingoOverlayRing {
   0% {
-    opacity: 0.65;
-    inset: -1px;
+    opacity: 0.78;
+    inset: -2px;
   }
   100% {
     opacity: 0;
-    inset: -7px;
+    inset: -11px;
   }
 }
 
-body.cerolingo-no-fx .cerolingo-fx-overlay {
+@keyframes cerolingoGlossSweep {
+  0% {
+    transform: translateX(-140%) skewX(-22deg);
+    opacity: 0;
+  }
+  25% {
+    opacity: 0.75;
+  }
+  100% {
+    transform: translateX(220%) skewX(-22deg);
+    opacity: 0;
+  }
+}
+
+@keyframes cerolingoBurstRing {
+  0% {
+    opacity: 0.95;
+    transform: scale(0.4);
+  }
+  38% {
+    opacity: 0.72;
+    transform: scale(1.65);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.75);
+  }
+}
+
+@keyframes cerolingoSparkOut {
+  0% {
+    opacity: 0;
+    transform: rotate(var(--spark-angle, 0deg)) translateY(-5px) scaleY(0.5);
+  }
+  22% {
+    opacity: 1;
+    transform: rotate(var(--spark-angle, 0deg)) translateY(-15px) scaleY(1.15);
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(var(--spark-angle, 0deg)) translateY(-30px) scaleY(0.35);
+  }
+}
+
+@keyframes cerolingoTrailFade {
+  0% {
+    opacity: 0.62;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.2);
+  }
+}
+
+@keyframes cerolingoDotBounce {
+  0%,
+  75%,
+  100% {
+    transform: translateY(0) scale(0.9);
+    opacity: 0.72;
+  }
+  35% {
+    transform: translateY(-4px) scale(1.15);
+    opacity: 1;
+  }
+}
+
+@keyframes cerolingoEqBar {
+  0%,
+  100% {
+    transform: scaleY(0.35);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes cerolingoKeycapFloat {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 6px) scale(0.65) rotate(var(--key-rot, 0deg));
+  }
+  22% {
+    opacity: 1;
+    transform: translate(-50%, -10px) scale(1.06) rotate(var(--key-rot, 0deg));
+  }
+  65% {
+    opacity: 0.92;
+    transform: translate(-50%, -22px) scale(0.98) rotate(var(--key-rot, 0deg));
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -34px) scale(0.8) rotate(var(--key-rot, 0deg));
+  }
+}
+
+@keyframes cerolingoMicBadgePop {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.55) rotate(-10deg);
+  }
+  22% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.08) rotate(3deg);
+  }
+  36% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1) rotate(0deg);
+  }
+  78% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1) rotate(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.84) translateY(-8px);
+  }
+}
+
+@keyframes cerolingoMicSlashDraw {
+  0% {
+    stroke-dashoffset: 36;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes cerolingoAudioPillPop {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.65);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.06);
+  }
+  34% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  78% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.86) translateY(-6px);
+  }
+}
+
+@keyframes cerolingoMatchDraw {
+  0% {
+    stroke-dashoffset: var(--line-len, 300);
+    opacity: 0.95;
+  }
+  42% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  75% {
+    stroke-dashoffset: 0;
+    opacity: 0.95;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0;
+  }
+}
+
+@keyframes cerolingoTypingEnter {
+  0% {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes cerolingoTypingExit {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.028);
+  }
+}
+
+@keyframes cerolingoTypingBreathe {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 2px rgba(143, 164, 255, 0.88),
+      0 4px 0 rgba(70, 83, 201, 0.55),
+      0 0 16px 2px rgba(104, 119, 254, 0.48),
+      inset 0 0 10px rgba(231, 236, 255, 0.16);
+  }
+  50% {
+    box-shadow:
+      0 0 0 2.5px rgba(179, 208, 255, 0.98),
+      0 4px 0 rgba(70, 83, 201, 0.72),
+      0 0 22px 4px rgba(104, 119, 254, 0.68),
+      inset 0 0 14px rgba(231, 236, 255, 0.25);
+  }
+}
+
+@keyframes cerolingoMenuSolvingPulse {
+  0%,
+  100% {
+    box-shadow:
+      0px 0.42rem 0px 0px var(--dark-main-color),
+      0 0 10px rgba(104, 119, 254, 0.35);
+  }
+  50% {
+    box-shadow:
+      0px 0.42rem 0px 0px var(--dark-main-color),
+      0 0 20px rgba(143, 164, 255, 0.78);
+  }
+}
+
+body.cerolingo-no-fx #cerolingoVirtualCursor,
+body.cerolingo-no-fx #cerolingoSolvingBar,
+body.cerolingo-no-fx .cerolingo-fx-overlay,
+body.cerolingo-no-fx .cerolingo-fx-burst,
+body.cerolingo-no-fx .cerolingo-fx-ripple,
+body.cerolingo-no-fx .cerolingo-fx-trail,
+body.cerolingo-no-fx .cerolingo-fx-typing-halo,
+body.cerolingo-no-fx .cerolingo-fx-keycap,
+body.cerolingo-no-fx .cerolingo-fx-mic-badge,
+body.cerolingo-no-fx .cerolingo-fx-audio-wave,
+body.cerolingo-no-fx .cerolingo-fx-match-line {
   display: none !important;
 }
 
+/* Top solving bar */
+body:not(.cerolingo-no-fx) #cerolingoSolvingBar {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 4px !important;
+  z-index: 2147482900 !important;
+  pointer-events: none !important;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(104, 119, 254, 0.9) 18%,
+    #8fa4ff 42%,
+    #e7ecff 50%,
+    #8fa4ff 58%,
+    rgba(104, 119, 254, 0.9) 82%,
+    transparent 100%
+  ) !important;
+  background-size: 220% 100% !important;
+  box-shadow: 0 0 14px rgba(104, 119, 254, 0.78) !important;
+  opacity: 0 !important;
+  transform: scaleY(0.4) !important;
+  transform-origin: top !important;
+  transition:
+    opacity 260ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 260ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+
+body:not(.cerolingo-no-fx) #cerolingoSolvingBar.is-active {
+  opacity: 1 !important;
+  transform: scaleY(1) !important;
+  animation: cerolingoSolvingFlow 1.1s linear infinite !important;
+}
+
+body:not(.cerolingo-no-fx)[data-cerolingo-solving="true"]
+  #cerolingoModMenuTitleBar {
+  animation: cerolingoMenuSolvingPulse 1.05s ease-in-out infinite !important;
+}
+
+/* Virtual cursor */
+body:not(.cerolingo-no-fx) #cerolingoVirtualCursor {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  z-index: 2147483000 !important;
+  pointer-events: none !important;
+  will-change: transform, opacity !important;
+  opacity: 0 !important;
+  transition-property: transform, opacity !important;
+  transition-timing-function:
+    cubic-bezier(0.16, 1, 0.3, 1), cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+body:not(.cerolingo-no-fx) #cerolingoVirtualCursor.is-visible {
+  opacity: 1 !important;
+}
+
+body:not(.cerolingo-no-fx) #cerolingoVirtualCursor .cerolingo-cursor-tilt {
+  transform-origin: 0 0 !important;
+  transform: rotate(var(--cerolingo-tilt, 0deg)) !important;
+  transition: transform 190ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+
+body:not(.cerolingo-no-fx) #cerolingoVirtualCursor .cerolingo-cursor-inner {
+  position: relative !important;
+  margin-left: -8px !important;
+  margin-top: -7px !important;
+  transform-origin: 8px 7px !important;
+  transform: scale(0.7) !important;
+  transition: transform 200ms cubic-bezier(0.34, 1.48, 0.64, 1) !important;
+}
+
+body:not(.cerolingo-no-fx)
+  #cerolingoVirtualCursor.is-visible
+  .cerolingo-cursor-inner {
+  transform: scale(1) !important;
+}
+
+body:not(.cerolingo-no-fx)
+  #cerolingoVirtualCursor.is-pressing
+  .cerolingo-cursor-inner {
+  transform: scale(0.84, 0.88) translateY(3px) rotate(-7deg) !important;
+  transition-duration: 75ms !important;
+}
+
+body:not(.cerolingo-no-fx) #cerolingoVirtualCursor .cerolingo-cursor-halo {
+  position: absolute !important;
+  left: -10px !important;
+  top: -10px !important;
+  width: 34px !important;
+  height: 34px !important;
+  border-radius: 50% !important;
+  background: radial-gradient(
+    circle,
+    rgba(143, 164, 255, 0.52) 0%,
+    rgba(104, 119, 254, 0.16) 54%,
+    transparent 74%
+  ) !important;
+  transform: scale(0.82) !important;
+  opacity: 0.72 !important;
+  transition:
+    transform 130ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 130ms ease !important;
+}
+
+body:not(.cerolingo-no-fx)
+  #cerolingoVirtualCursor.is-pressing
+  .cerolingo-cursor-halo {
+  transform: scale(1.45) !important;
+  opacity: 1 !important;
+}
+
+body:not(.cerolingo-no-fx) #cerolingoVirtualCursor .cerolingo-cursor-svg {
+  display: block !important;
+  width: 44px !important;
+  height: 44px !important;
+  overflow: visible !important;
+  filter: drop-shadow(0 6px 14px rgba(72, 85, 207, 0.58))
+    drop-shadow(0 2px 3px rgba(19, 31, 36, 0.45)) !important;
+}
+
+body:not(.cerolingo-no-fx)
+  #cerolingoVirtualCursor
+  .cerolingo-cursor-shadow-path {
+  fill: #4350c4 !important;
+  stroke: #4350c4 !important;
+  stroke-width: 3.4 !important;
+  stroke-linejoin: round !important;
+  stroke-linecap: round !important;
+  transition:
+    fill 180ms ease,
+    stroke 180ms ease !important;
+}
+
+body:not(.cerolingo-no-fx)
+  #cerolingoVirtualCursor
+  .cerolingo-cursor-body-path {
+  fill: var(--background-color) !important;
+  stroke: var(--title-color) !important;
+  stroke-width: 3.2 !important;
+  stroke-linejoin: round !important;
+  stroke-linecap: round !important;
+  transition:
+    fill 180ms ease,
+    stroke 180ms ease !important;
+}
+
+body:not(.cerolingo-no-fx)
+  #cerolingoVirtualCursor
+  .cerolingo-cursor-shine-path {
+  fill: none !important;
+  stroke: rgba(255, 255, 255, 0.55) !important;
+  stroke-width: 2.8 !important;
+  stroke-linecap: round !important;
+}
+
+body:not(.cerolingo-no-fx)
+  #cerolingoVirtualCursor[data-mode="confirm"]
+  .cerolingo-cursor-body-path {
+  fill: #64d8a5 !important;
+}
+
+body:not(.cerolingo-no-fx)
+  #cerolingoVirtualCursor[data-mode="confirm"]
+  .cerolingo-cursor-shadow-path {
+  fill: #3d986e !important;
+  stroke: #3d986e !important;
+}
+
+body:not(.cerolingo-no-fx)
+  #cerolingoVirtualCursor[data-mode="mic"]
+  .cerolingo-cursor-body-path {
+  fill: var(--red-color) !important;
+}
+
+body:not(.cerolingo-no-fx)
+  #cerolingoVirtualCursor[data-mode="mic"]
+  .cerolingo-cursor-shadow-path {
+  fill: var(--dark-red-color) !important;
+  stroke: var(--dark-red-color) !important;
+}
+
+/* Cursor mode badge */
+body:not(.cerolingo-no-fx) #cerolingoVirtualCursor .cerolingo-cursor-badge {
+  position: absolute !important;
+  left: 28px !important;
+  top: 27px !important;
+  min-width: 28px !important;
+  height: 24px !important;
+  padding: 0 8px !important;
+  border-radius: 999px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 3px !important;
+  background-color: var(--dark-main-color) !important;
+  border: 2px solid var(--title-color) !important;
+  box-shadow:
+    0 3px 0 #4350c4,
+    0 4px 10px rgba(19, 31, 36, 0.45) !important;
+  opacity: 0 !important;
+  transform: scale(0.45) translateY(4px) !important;
+  transition:
+    opacity 180ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 210ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    background-color 180ms ease,
+    box-shadow 180ms ease !important;
+}
+
+body:not(.cerolingo-no-fx)
+  #cerolingoVirtualCursor.is-visible[data-mode="typing"]
+  .cerolingo-cursor-badge,
+body:not(.cerolingo-no-fx)
+  #cerolingoVirtualCursor.is-visible[data-mode="mic"]
+  .cerolingo-cursor-badge,
+body:not(.cerolingo-no-fx)
+  #cerolingoVirtualCursor.is-visible[data-mode="listen"]
+  .cerolingo-cursor-badge,
+body:not(.cerolingo-no-fx)
+  #cerolingoVirtualCursor.is-visible[data-mode="match"]
+  .cerolingo-cursor-badge,
+body:not(.cerolingo-no-fx)
+  #cerolingoVirtualCursor.is-visible[data-mode="confirm"]
+  .cerolingo-cursor-badge {
+  opacity: 1 !important;
+  transform: scale(1) translateY(0) !important;
+}
+
+body:not(.cerolingo-no-fx)
+  #cerolingoVirtualCursor[data-mode="mic"]
+  .cerolingo-cursor-badge {
+  background-color: var(--red-color) !important;
+  box-shadow:
+    0 3px 0 var(--dark-red-color),
+    0 4px 10px rgba(201, 83, 83, 0.45) !important;
+}
+
+body:not(.cerolingo-no-fx)
+  #cerolingoVirtualCursor[data-mode="confirm"]
+  .cerolingo-cursor-badge {
+  background-color: #5fc18c !important;
+  box-shadow:
+    0 3px 0 #3a8d60,
+    0 4px 10px rgba(95, 193, 140, 0.45) !important;
+}
+
+body:not(.cerolingo-no-fx)
+  #cerolingoVirtualCursor
+  .cerolingo-cursor-badge
+  > span {
+  display: none !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 3px !important;
+}
+
+body:not(.cerolingo-no-fx)
+  #cerolingoVirtualCursor[data-mode="typing"]
+  .cerolingo-badge-typing,
+body:not(.cerolingo-no-fx)
+  #cerolingoVirtualCursor[data-mode="mic"]
+  .cerolingo-badge-mic,
+body:not(.cerolingo-no-fx)
+  #cerolingoVirtualCursor[data-mode="listen"]
+  .cerolingo-badge-listen,
+body:not(.cerolingo-no-fx)
+  #cerolingoVirtualCursor[data-mode="match"]
+  .cerolingo-badge-match,
+body:not(.cerolingo-no-fx)
+  #cerolingoVirtualCursor[data-mode="confirm"]
+  .cerolingo-badge-confirm {
+  display: flex !important;
+}
+
+body:not(.cerolingo-no-fx) .cerolingo-badge-dot {
+  width: 4.5px !important;
+  height: 4.5px !important;
+  border-radius: 50% !important;
+  background-color: #ffffff !important;
+  animation: cerolingoDotBounce 0.66s ease-in-out infinite !important;
+}
+
+body:not(.cerolingo-no-fx) .cerolingo-badge-dot:nth-child(2) {
+  animation-delay: 0.11s !important;
+}
+
+body:not(.cerolingo-no-fx) .cerolingo-badge-dot:nth-child(3) {
+  animation-delay: 0.22s !important;
+}
+
+body:not(.cerolingo-no-fx) .cerolingo-badge-bar {
+  width: 3px !important;
+  height: 11px !important;
+  border-radius: 999px !important;
+  background-color: #ffffff !important;
+  transform-origin: center !important;
+  animation: cerolingoEqBar 0.45s ease-in-out infinite !important;
+}
+
+body:not(.cerolingo-no-fx) .cerolingo-badge-bar:nth-child(2) {
+  height: 14px !important;
+  animation-delay: 0.12s !important;
+}
+
+body:not(.cerolingo-no-fx) .cerolingo-badge-bar:nth-child(3) {
+  height: 9px !important;
+  animation-delay: 0.24s !important;
+}
+
+body:not(.cerolingo-no-fx) .cerolingo-badge-icon {
+  display: block !important;
+  width: 15px !important;
+  height: 15px !important;
+}
+
+/* Cursor trail */
+body:not(.cerolingo-no-fx) .cerolingo-fx-trail {
+  position: fixed !important;
+  z-index: 2147482960 !important;
+  pointer-events: none !important;
+  width: 10px !important;
+  height: 10px !important;
+  border-radius: 50% !important;
+  background: radial-gradient(
+    circle,
+    rgba(231, 236, 255, 0.9) 0%,
+    rgba(123, 147, 255, 0.65) 55%,
+    transparent 100%
+  ) !important;
+  box-shadow: 0 0 8px rgba(104, 119, 254, 0.55) !important;
+  will-change: transform, opacity !important;
+  animation: cerolingoTrailFade 240ms cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
+}
+
+/* Target highlight */
 body:not(.cerolingo-no-fx) .cerolingo-fx-overlay {
   position: fixed !important;
-  z-index: 250 !important;
+  z-index: 2147482950 !important;
   pointer-events: none !important;
   box-sizing: border-box !important;
-  border: 2px solid #8fa4ff !important;
+  overflow: hidden !important;
+  will-change: transform, opacity !important;
+  border: 2.5px solid #8fa4ff !important;
   background: linear-gradient(
     135deg,
-    rgba(104, 119, 254, 0.28) 0%,
-    rgba(123, 147, 255, 0.14) 100%
+    rgba(104, 119, 254, 0.24) 0%,
+    rgba(143, 164, 255, 0.08) 100%
   ) !important;
   box-shadow:
-    0 0 10px 1px rgba(104, 119, 254, 0.55),
-    inset 0 0 8px rgba(231, 236, 255, 0.3) !important;
-  animation: cerolingoOverlayPop 0.3s var(--spring-ease) forwards !important;
+    0 0 16px 2px rgba(104, 119, 254, 0.55),
+    inset 0 0 12px rgba(231, 236, 255, 0.28) !important;
+  animation: cerolingoOverlayBloom 350ms cubic-bezier(0.22, 1, 0.36, 1)
+    forwards !important;
+}
+
+body:not(.cerolingo-no-fx) .cerolingo-fx-overlay::before {
+  content: "" !important;
+  position: absolute !important;
+  top: -10% !important;
+  bottom: -10% !important;
+  left: 0 !important;
+  width: 48% !important;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(231, 236, 255, 0.52) 50%,
+    transparent 100%
+  ) !important;
+  pointer-events: none !important;
+  animation: cerolingoGlossSweep 320ms cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
 }
 
 body:not(.cerolingo-no-fx) .cerolingo-fx-overlay::after {
   content: "" !important;
   position: absolute !important;
-  inset: -1px !important;
+  inset: -2px !important;
   border-radius: inherit !important;
-  border: 1.5px solid rgba(179, 208, 255, 0.65) !important;
+  border: 2px solid rgba(179, 208, 255, 0.72) !important;
   pointer-events: none !important;
-  animation: cerolingoOverlayRing 0.3s ease-out forwards !important;
+  animation: cerolingoOverlayRing 350ms cubic-bezier(0.16, 1, 0.3, 1)
+    forwards !important;
 }
 
-body:not(.cerolingo-no-fx) .cerolingo-bot-click,
-body:not(.cerolingo-no-fx)
-  [data-test^="challenge"]:not([data-test*="match"])
-  button[data-test*="-challenge-tap-token"]:not(
-    [data-test="word-bank"] button
-  ) {
-  position: relative !important;
-  z-index: 200 !important;
-  --web-ui_button-background-color: #253366 !important;
-  --web-ui_button-border-color: #8fa4ff !important;
-  --web-ui_button-color: var(--title-color) !important;
-  background-color: #253366 !important;
-  border-color: #8fa4ff !important;
-  color: var(--title-color) !important;
-  outline: 2px solid #8fa4ff !important;
+body:not(.cerolingo-no-fx) .cerolingo-fx-overlay.cerolingo-fx-confirm {
+  border-color: #7bffd0 !important;
+  background: linear-gradient(
+    135deg,
+    rgba(95, 193, 140, 0.26) 0%,
+    rgba(123, 255, 208, 0.1) 100%
+  ) !important;
   box-shadow:
-    0 4px 0 var(--dark-main-color),
-    0 0 10px 1px rgba(104, 119, 254, 0.45) !important;
-  animation: cerolingoBotPulse 0.3s var(--spring-ease);
+    0 0 18px 2px rgba(95, 193, 140, 0.6),
+    inset 0 0 12px rgba(231, 255, 245, 0.3) !important;
 }
 
-body:not(.cerolingo-no-fx) .cerolingo-bot-click::before,
-body:not(.cerolingo-no-fx) .cerolingo-bot-click::after,
-body:not(.cerolingo-no-fx) .cerolingo-bot-click > span:first-child,
-body:not(.cerolingo-no-fx) .cerolingo-bot-click > div:first-child,
-body:not(.cerolingo-no-fx)
-  [data-test^="challenge"]:not([data-test*="match"])
-  button[data-test*="-challenge-tap-token"]:not(
-    [data-test="word-bank"] button
-  )::before,
-body:not(.cerolingo-no-fx)
-  [data-test^="challenge"]:not([data-test*="match"])
-  button[data-test*="-challenge-tap-token"]:not(
-    [data-test="word-bank"] button
-  )::after,
-body:not(.cerolingo-no-fx)
-  [data-test^="challenge"]:not([data-test*="match"])
-  button[data-test*="-challenge-tap-token"]:not([data-test="word-bank"] button)
-  > span:first-child {
-  background-color: #253366 !important;
-  border-color: #8fa4ff !important;
+body:not(.cerolingo-no-fx) .cerolingo-fx-overlay.cerolingo-fx-mic {
+  border-color: #ff9a9a !important;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 133, 133, 0.26) 0%,
+    rgba(201, 83, 83, 0.1) 100%
+  ) !important;
   box-shadow:
-    0 4px 0 var(--dark-main-color),
-    0 0 8px rgba(104, 119, 254, 0.4) !important;
+    0 0 16px 2px rgba(255, 133, 133, 0.55),
+    inset 0 0 10px rgba(255, 230, 230, 0.25) !important;
 }
 
-body:not(.cerolingo-no-fx) .cerolingo-bot-click * {
-  color: var(--title-color) !important;
+body:not(.cerolingo-no-fx) .cerolingo-fx-overlay.cerolingo-fx-match {
+  border-color: #9ab4ff !important;
+  box-shadow:
+    0 0 18px 2px rgba(123, 147, 255, 0.62),
+    inset 0 0 12px rgba(123, 255, 208, 0.25) !important;
+}
+
+/* Click burst */
+body:not(.cerolingo-no-fx) .cerolingo-fx-burst {
+  position: fixed !important;
+  z-index: 2147482985 !important;
+  pointer-events: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  will-change: transform, opacity !important;
+}
+
+body:not(.cerolingo-no-fx) .cerolingo-fx-burst-ring {
+  position: absolute !important;
+  left: -11px !important;
+  top: -11px !important;
+  width: 22px !important;
+  height: 22px !important;
+  border-radius: 50% !important;
+  border: 3px solid rgba(179, 208, 255, 0.92) !important;
+  box-shadow: 0 0 12px rgba(104, 119, 254, 0.72) !important;
+  animation: cerolingoBurstRing 370ms cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+body:not(.cerolingo-no-fx) .cerolingo-fx-spark {
+  position: absolute !important;
+  left: -2.5px !important;
+  top: -5px !important;
+  width: 5px !important;
+  height: 11px !important;
+  border-radius: 999px !important;
+  background: linear-gradient(180deg, #e7ecff 0%, #7b93ff 100%) !important;
+  box-shadow: 0 0 8px rgba(104, 119, 254, 0.72) !important;
+  transform-origin: 50% 50% !important;
+  animation: cerolingoSparkOut 370ms cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+body:not(.cerolingo-no-fx)
+  .cerolingo-fx-burst-confirm
+  .cerolingo-fx-burst-ring {
+  border-color: rgba(123, 255, 208, 0.95) !important;
+  box-shadow: 0 0 12px rgba(95, 193, 140, 0.75) !important;
+}
+
+body:not(.cerolingo-no-fx) .cerolingo-fx-burst-confirm .cerolingo-fx-spark {
+  background: linear-gradient(180deg, #e7fff6 0%, #7bffd0 100%) !important;
+  box-shadow: 0 0 8px rgba(95, 193, 140, 0.75) !important;
+}
+
+body:not(.cerolingo-no-fx) .cerolingo-fx-burst-mic .cerolingo-fx-burst-ring {
+  border-color: rgba(255, 150, 150, 0.95) !important;
+  box-shadow: 0 0 12px rgba(255, 133, 133, 0.72) !important;
+}
+
+body:not(.cerolingo-no-fx) .cerolingo-fx-burst-mic .cerolingo-fx-spark {
+  background: linear-gradient(180deg, #fff0f0 0%, #ff8585 100%) !important;
+  box-shadow: 0 0 8px rgba(255, 133, 133, 0.72) !important;
+}
+
+body:not(.cerolingo-no-fx) .cerolingo-fx-burst-match .cerolingo-fx-spark {
+  background: linear-gradient(180deg, #7bffd0 0%, #7b93ff 100%) !important;
+}
+
+/* Match pair arc */
+body:not(.cerolingo-no-fx) .cerolingo-fx-match-line {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 2147482970 !important;
+  pointer-events: none !important;
+  overflow: visible !important;
+}
+
+body:not(.cerolingo-no-fx) .cerolingo-fx-match-path {
+  fill: none !important;
+  stroke: #8fa4ff !important;
+  stroke-width: 4.5 !important;
+  stroke-linecap: round !important;
+  filter: drop-shadow(0 0 8px rgba(104, 119, 254, 0.85)) !important;
+  stroke-dasharray: var(--line-len, 300) !important;
+  animation: cerolingoMatchDraw 420ms cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
+}
+
+body:not(.cerolingo-no-fx) .cerolingo-fx-match-path-core {
+  fill: none !important;
+  stroke: #7bffd0 !important;
+  stroke-width: 2 !important;
+  stroke-linecap: round !important;
+  stroke-dasharray: var(--line-len, 300) !important;
+  animation: cerolingoMatchDraw 420ms cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
+}
+
+/* Typing keycaps */
+body:not(.cerolingo-no-fx) .cerolingo-fx-keycap {
+  position: fixed !important;
+  z-index: 2147482990 !important;
+  pointer-events: none !important;
+  min-width: 24px !important;
+  height: 24px !important;
+  padding: 0 6px !important;
+  border-radius: 8px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background-color: var(--background-color) !important;
+  border: 2px solid var(--title-color) !important;
+  box-shadow:
+    0 3px 0 #4350c4,
+    0 5px 12px rgba(104, 119, 254, 0.5) !important;
+  color: #ffffff !important;
+  font-family: "din-round-web", "Nunito", sans-serif !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+  text-transform: uppercase !important;
+  will-change: transform, opacity !important;
+  animation: cerolingoKeycapFloat 380ms cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
+}
+
+/* Mic skip badge */
+body:not(.cerolingo-no-fx) .cerolingo-fx-mic-badge {
+  position: fixed !important;
+  z-index: 2147482990 !important;
+  pointer-events: none !important;
+  width: 54px !important;
+  height: 54px !important;
+  border-radius: 18px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: linear-gradient(180deg, #ff9696 0%, var(--red-color) 100%) !important;
+  border: 2.5px solid #fff2f2 !important;
+  box-shadow:
+    0 5px 0 var(--dark-red-color),
+    0 8px 20px rgba(255, 133, 133, 0.55) !important;
+  will-change: transform, opacity !important;
+  animation: cerolingoMicBadgePop 520ms cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
+}
+
+body:not(.cerolingo-no-fx) .cerolingo-fx-mic-badge::after {
+  content: "" !important;
+  position: absolute !important;
+  inset: -4px !important;
+  border-radius: 22px !important;
+  border: 2.5px solid rgba(255, 160, 160, 0.8) !important;
+  animation: cerolingoOverlayRing 440ms cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+body:not(.cerolingo-no-fx) .cerolingo-fx-mic-badge svg {
+  width: 28px !important;
+  height: 28px !important;
+  overflow: visible !important;
+}
+
+body:not(.cerolingo-no-fx) .cerolingo-fx-mic-slash {
+  stroke-dasharray: 36 !important;
+  stroke-dashoffset: 36;
+  animation: cerolingoMicSlashDraw 190ms cubic-bezier(0.22, 1, 0.36, 1) 20ms
+    forwards !important;
+}
+
+/* Audio indicator */
+body:not(.cerolingo-no-fx) .cerolingo-fx-audio-wave {
+  position: fixed !important;
+  z-index: 2147482990 !important;
+  pointer-events: none !important;
+  height: 36px !important;
+  padding: 0 13px !important;
+  border-radius: 999px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 4px !important;
+  background: linear-gradient(180deg, #8a9eff 0%, var(--dark-main-color) 100%) !important;
+  border: 2.5px solid var(--title-color) !important;
+  box-shadow:
+    0 4px 0 #4350c4,
+    0 6px 18px rgba(104, 119, 254, 0.58) !important;
+  will-change: transform, opacity !important;
+  animation: cerolingoAudioPillPop 500ms cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
+}
+
+body:not(.cerolingo-no-fx) .cerolingo-fx-audio-wave::after {
+  content: "" !important;
+  position: absolute !important;
+  inset: -3px !important;
+  border-radius: 999px !important;
+  border: 2px solid rgba(179, 208, 255, 0.78) !important;
+  animation: cerolingoOverlayRing 440ms cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+body:not(.cerolingo-no-fx) .cerolingo-fx-eq-bar {
+  width: 4px !important;
+  height: 16px !important;
+  border-radius: 999px !important;
+  background-color: #ffffff !important;
+  animation: cerolingoEqBar 0.42s ease-in-out infinite !important;
+}
+
+body:not(.cerolingo-no-fx) .cerolingo-fx-eq-bar:nth-child(2) {
+  height: 22px !important;
+  animation-delay: 0.08s !important;
+}
+
+body:not(.cerolingo-no-fx) .cerolingo-fx-eq-bar:nth-child(3) {
+  height: 14px !important;
+  animation-delay: 0.16s !important;
+}
+
+body:not(.cerolingo-no-fx) .cerolingo-fx-eq-bar:nth-child(4) {
+  height: 20px !important;
+  animation-delay: 0.24s !important;
+}
+
+body:not(.cerolingo-no-fx) .cerolingo-fx-eq-bar:nth-child(5) {
+  height: 12px !important;
+  animation-delay: 0.32s !important;
+}
+
+/* Button press feedback */
+body:not(.cerolingo-no-fx) .cerolingo-btn-press {
+  transform: translateY(2.5px) scale(0.97) !important;
+  filter: brightness(1.08) !important;
+  transition:
+    transform 105ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 105ms ease !important;
+}
+
+body:not(.cerolingo-no-fx) .cerolingo-btn-release {
+  transition:
+    transform 190ms cubic-bezier(0.34, 1.48, 0.64, 1),
+    filter 190ms ease !important;
+}
+
+/* Typing highlight */
+body:not(.cerolingo-no-fx) .cerolingo-fx-typing-halo {
+  position: fixed !important;
+  z-index: 2147482950 !important;
+  pointer-events: none !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+  border: 2.5px solid rgba(143, 164, 255, 0.94) !important;
+  background: linear-gradient(
+    135deg,
+    rgba(104, 119, 254, 0.14) 0%,
+    rgba(143, 164, 255, 0.04) 100%
+  ) !important;
+  will-change: transform, opacity !important;
+  animation:
+    cerolingoTypingEnter 180ms cubic-bezier(0.22, 1, 0.36, 1) forwards,
+    cerolingoTypingBreathe 0.95s ease-in-out infinite !important;
+}
+
+body:not(.cerolingo-no-fx) .cerolingo-fx-typing-halo::before {
+  content: "" !important;
+  position: absolute !important;
+  top: -10% !important;
+  bottom: -10% !important;
+  left: 0 !important;
+  width: 35% !important;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(231, 236, 255, 0.34) 50%,
+    transparent 100%
+  ) !important;
+  animation: cerolingoGlossSweep 0.9s ease-in-out infinite !important;
+}
+
+body:not(.cerolingo-no-fx) .cerolingo-fx-typing-halo.is-exiting {
+  animation: cerolingoTypingExit 230ms cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
 }
 
 body:not(.cerolingo-no-fx) .cerolingo-bot-typing {
-  position: relative !important;
-  z-index: 200 !important;
-  border-color: #8fa4ff !important;
-  background-color: #253366 !important;
-  outline: 2px solid #8fa4ff !important;
   box-shadow:
-    0 4px 0 var(--dark-main-color),
-    0 0 12px 2px rgba(104, 119, 254, 0.55) !important;
-  color: var(--title-color) !important;
-  animation: cerolingoBotPulse 0.3s var(--spring-ease);
-  transition:
-    border-color 0.3s ease,
-    box-shadow 0.3s ease,
-    background-color 0.3s ease !important;
+    0 0 0 2px rgba(143, 164, 255, 0.72),
+    0 0 14px rgba(104, 119, 254, 0.4) !important;
+  transition: box-shadow 220ms cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
-body:not(.cerolingo-no-fx) .cerolingo-bot-typing * {
-  color: var(--title-color) !important;
+body:not(.cerolingo-no-fx) .cerolingo-bot-typing-out {
+  transition: box-shadow 220ms cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 @keyframes cerolingoMenuEnter {

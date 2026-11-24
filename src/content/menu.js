@@ -209,7 +209,7 @@ setInterval(() => {
 }, 500);
 
 chrome.storage.onChanged.addListener((changes) => {
-  if (changes.storyId || changes.url || changes.loop) {
+  if (changes.storyId || changes.url || changes.loop || changes.autoPath) {
     chrome.storage.local.get(["currentView"], (data) => {
       if (data.currentView === "xp" || data.currentView === "story") {
         loadView(data.currentView, false);
@@ -229,7 +229,12 @@ async function loadView(id, animate = true) {
     menuContent.classList.add("cerolingoBlurOut");
   }
 
-  const data = await chrome.storage.local.get(["storyId", "loop", "url"]);
+  const data = await chrome.storage.local.get([
+    "storyId",
+    "loop",
+    "autoPath",
+    "url",
+  ]);
   const elements = [];
 
   if (id === "main") {
@@ -309,26 +314,54 @@ async function loadView(id, animate = true) {
     };
 
     elements.push(xpStatus, activateOnceBtn, xpFarmBtn);
-  } else if (id === "story" && data.url) {
-    const lessonLoopBtn = document.createElement("button");
-    lessonLoopBtn.setAttribute("running", data.loop ? "true" : "false");
-    lessonLoopBtn.textContent = data.loop
-      ? "Stop lesson loop"
-      : "Start lesson loop";
+  } else if (id === "story") {
+    const autoPathBtn = document.createElement("button");
+    autoPathBtn.id = `${modMenuId}AutoPath`;
+    autoPathBtn.setAttribute("running", data.autoPath ? "true" : "false");
+    autoPathBtn.textContent = data.autoPath
+      ? "Stop auto-path"
+      : "Start auto-path";
 
-    lessonLoopBtn.onclick = () => {
-      const isRunning = lessonLoopBtn.getAttribute("running") !== "true";
+    autoPathBtn.onclick = () => {
+      const isRunning = autoPathBtn.getAttribute("running") !== "true";
       if (isRunning && typeof resetActionGuardState === "function") {
         resetActionGuardState();
       }
-      lessonLoopBtn.setAttribute("running", isRunning ? "true" : "false");
-      chrome.storage.local.set({ loop: isRunning });
-      lessonLoopBtn.textContent = isRunning
-        ? "Stop lesson loop"
-        : "Start lesson loop";
+      autoPathBtn.setAttribute("running", isRunning ? "true" : "false");
+      chrome.storage.local.set(
+        isRunning ? { autoPath: true, loop: false } : { autoPath: false },
+      );
+      autoPathBtn.textContent = isRunning
+        ? "Stop auto-path"
+        : "Start auto-path";
     };
 
-    elements.push(lessonLoopBtn);
+    elements.push(autoPathBtn);
+
+    if (data.url) {
+      const lessonLoopBtn = document.createElement("button");
+      lessonLoopBtn.id = `${modMenuId}LessonLoop`;
+      lessonLoopBtn.setAttribute("running", data.loop ? "true" : "false");
+      lessonLoopBtn.textContent = data.loop
+        ? "Stop lesson loop"
+        : "Start lesson loop";
+
+      lessonLoopBtn.onclick = () => {
+        const isRunning = lessonLoopBtn.getAttribute("running") !== "true";
+        if (isRunning && typeof resetActionGuardState === "function") {
+          resetActionGuardState();
+        }
+        lessonLoopBtn.setAttribute("running", isRunning ? "true" : "false");
+        chrome.storage.local.set(
+          isRunning ? { loop: true, autoPath: false } : { loop: false },
+        );
+        lessonLoopBtn.textContent = isRunning
+          ? "Stop lesson loop"
+          : "Start lesson loop";
+      };
+
+      elements.push(lessonLoopBtn);
+    }
   } else {
     const info = document.createElement("p");
     info.id = `${modMenuId}ActivationInfo`;
