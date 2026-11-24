@@ -1,19 +1,31 @@
+<div align="center">
+
+![Cerolingo Banner](src/img/banner.png)
+
+<p>
+  <a href="https://chromewebstore.google.com/detail/cerolingo/apgkphplddmjkoogmoijendkdjaaeiii"><img src="https://img.shields.io/badge/Chrome_Web_Store-Install_Free-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white" alt="Chrome Web Store" /></a>
+  <a href="https://addons.mozilla.org/firefox/addon/cerolingo/"><img src="https://img.shields.io/badge/Firefox_Add--ons-Install_Free-FF7139?style=for-the-badge&logo=firefox-browser&logoColor=white" alt="Firefox Add-ons" /></a>
+  <a href="https://ancymon.dev/Cerolingo/"><img src="https://img.shields.io/badge/Website-ancymon.dev-6877fe?style=for-the-badge" alt="Website" /></a>
+</p>
+
+<p>
+  <a href="https://chromewebstore.google.com/detail/cerolingo/apgkphplddmjkoogmoijendkdjaaeiii/reviews"><img src="https://img.shields.io/badge/Leave_a_Review-Chrome_Store-6877fe?style=flat-square&logo=google-chrome&logoColor=white" alt="Leave a review on Chrome Web Store" /></a>
+  &nbsp;
+  <a href="https://addons.mozilla.org/firefox/addon/cerolingo/reviews/"><img src="https://img.shields.io/badge/Leave_a_Review-Firefox_Add--ons-6877fe?style=flat-square&logo=firefox-browser&logoColor=white" alt="Leave a review on Firefox Add-ons" /></a>
+</p>
+
+</div>
+
 # Cerolingo Website
 
-[![Chrome Web Store](https://img.shields.io/badge/Chrome_Web_Store-Download-4285F4?logo=google-chrome&logoColor=white)](https://chromewebstore.google.com/detail/cerolingo/apgkphplddmjkoogmoijendkdjaaeiii)
-[![Firefox Add-ons](https://img.shields.io/badge/Firefox_Add--ons-Download-4285F4?logo=firefox-browser&logoColor=white)](https://addons.mozilla.org/firefox/addon/cerolingo/)
-[![Website](https://img.shields.io/badge/Website-ancymon.dev-6877ff?labelColor=e7ecff&logo=globe&logoColor=white)](https://ancymon.dev/Cerolingo/)
-
-Official landing page and privacy policy site for the Cerolingo browser extension.
-
-![Banner](src/img/cerolingo-title.png)
+Official landing page and privacy policy site for **Cerolingo**, the free and open-source (GPLv3) Duolingo automation browser extension.
 
 ## Links
 
-- [ancymon.dev/Cerolingo](https://ancymon.dev/Cerolingo) - Main landing page and FAQ
+- [ancymon.dev/Cerolingo](https://ancymon.dev/Cerolingo/) - Main landing page, preview, and FAQ
 - [ancymon.dev/Cerolingo/privacy](https://ancymon.dev/Cerolingo/privacy) - Extension privacy policy
-- [Chrome Web Store](https://chromewebstore.google.com/detail/cerolingo/apgkphplddmjkoogmoijendkdjaaeiii)
-- [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/cerolingo/)
+- [Chrome Web Store](https://chromewebstore.google.com/detail/cerolingo/apgkphplddmjkoogmoijendkdjaaeiii) ([Leave a review](https://chromewebstore.google.com/detail/cerolingo/apgkphplddmjkoogmoijendkdjaaeiii/reviews))
+- [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/cerolingo/) ([Leave a review](https://addons.mozilla.org/firefox/addon/cerolingo/reviews/))
 - [GitHub Repository](https://github.com/ancym0n/Cerolingo)
 
 ## CerolingoBM

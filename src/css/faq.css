@@ -58,11 +58,15 @@
   animation-delay: 0.46s;
 }
 
-#promo > div {
-  animation-delay: 0.5s;
+#faq > div:nth-of-type(6) {
+  animation-delay: 0.52s;
 }
 
-a[href="privacy"] {
+#promo > div {
+  animation-delay: 0.56s;
+}
+
+#faq a[href="privacy"] {
   display: inline-flex;
   max-width: 16rem;
   margin-top: 0.9rem;

@@ -60,7 +60,33 @@ a.stat-item:active {
 
 #faq > div:hover,
 #promo > div:hover,
-#privacy > div:hover {
+#privacy > div:hover,
+.review-panel:hover,
+.compare-card.is-cerolingo:hover {
   transform: translateY(-2px);
   box-shadow: 0 calc(0.38rem + 2px) 0 0 var(--dark-main-color);
+}
+
+.compare-card.is-other:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 calc(0.38rem + 2px) 0 0 #c95353;
+}
+
+a.btn-secondary:hover,
+.review-actions a:hover {
+  background-color: #2e3f7d;
+  border-color: #a9bcff;
+  color: #ffffff;
+}
+
+#content a.review-chip:hover {
+  background-color: #1f323b;
+  color: var(--title-color);
+  transform: translateY(-2px);
+  box-shadow: 0 calc(0.26rem + 2px) 0 0 var(--dark-main-color);
+}
+
+#content a.review-chip:active {
+  transform: translateY(2px);
+  box-shadow: 0 0.12rem 0 0 var(--dark-main-color);
 }

@@ -190,7 +190,8 @@
   border-left: none !important;
 }
 
-#content > div:not(#stats) {
+#content > div.download-links,
+#content > div:not(#stats):not(.hero-review-strip) {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;

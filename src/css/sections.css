@@ -1,0 +1,291 @@
+/* Hero additions */
+.hero-subtitle {
+  max-width: 34rem;
+  margin-top: -0.35rem;
+  color: var(--light-main-color);
+  font-size: 0.98rem;
+  line-height: 1.5;
+}
+
+a.btn-secondary {
+  background-color: #253366;
+  border-color: #8fa4ff;
+  box-shadow: 0 0.42rem 0 0 var(--dark-main-color);
+}
+
+.hero-review-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem 0.6rem;
+  width: 100%;
+  padding-top: 0.55rem;
+  margin-top: 0.1rem;
+  border-top: 1.5px solid rgba(104, 119, 254, 0.32);
+}
+
+.hero-review-text {
+  font-family: "Nunito", sans-serif;
+  font-size: 0.86rem;
+  font-weight: 800;
+  color: var(--main-color);
+}
+
+#content a.review-chip {
+  width: auto;
+  margin: 0;
+  padding: 0.3rem 0.85rem;
+  font-size: 0.82rem;
+  border-radius: 12px;
+  background-color: var(--bg-dark);
+  border: 2px solid var(--dark-main-color);
+  box-shadow: 0 0.26rem 0 0 var(--dark-main-color);
+  color: var(--main-color);
+}
+
+/* Sections */
+#features,
+#why,
+#review {
+  width: 95%;
+  display: grid;
+  justify-items: center;
+  gap: 1.15rem;
+  padding: 0.5rem 0;
+  scroll-margin-top: 1.75rem;
+  text-align: center;
+}
+
+.section-head {
+  display: grid;
+  justify-items: center;
+  gap: 0.35rem;
+  max-width: 40rem;
+}
+
+.section-sub {
+  color: var(--light-main-color);
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+/* Showcase */
+.showcase-stack {
+  width: 100%;
+  display: grid;
+  gap: 1.2rem;
+}
+
+.showcase-frame {
+  width: 100%;
+  background: transparent;
+}
+
+.showcase-frame img {
+  width: 100%;
+  display: block;
+}
+
+/* Comparison */
+.compare-grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.1rem;
+  align-items: stretch;
+}
+
+.compare-card {
+  background-color: var(--panel-bg);
+  border-radius: 16px;
+  padding: 1.35rem 1.35rem 1.45rem;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 0.95rem;
+  transition:
+    transform 0.3s var(--spring-ease),
+    box-shadow 0.3s var(--spring-ease);
+}
+
+.compare-card.is-cerolingo {
+  border: 2px solid var(--dark-main-color);
+  box-shadow: 0 0.38rem 0 0 var(--dark-main-color);
+}
+
+.compare-card.is-other {
+  border: 2px solid #c95353;
+  box-shadow: 0 0.38rem 0 0 #c95353;
+}
+
+.compare-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.compare-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.compare-brand img {
+  width: 1.75rem;
+  height: 1.75rem;
+  display: block;
+}
+
+.compare-head h2 {
+  margin: 0;
+  font-size: 1.18rem;
+  color: var(--title-color);
+}
+
+.compare-note {
+  font-family: "Nunito", sans-serif;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--main-color);
+}
+
+.compare-note.is-red {
+  color: #ff8585;
+}
+
+.toggle-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.toggle-list li {
+  border-radius: 12px;
+  padding: 0.55rem 0.85rem;
+  font-size: 0.9rem;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.toggle-list li.is-on {
+  background-color: #7bffd0;
+  border: 2px solid #5fc18c;
+  box-shadow: 0 0.28rem 0 0 #5fc18c;
+  color: #1c5739;
+}
+
+.toggle-list li.is-off {
+  background-color: #ff8585;
+  border: 2px solid #c95353;
+  box-shadow: 0 0.28rem 0 0 #c95353;
+  color: #6b1d1d;
+}
+
+/* Review */
+.review-panel {
+  width: 100%;
+  background-color: var(--panel-bg);
+  border: 2px solid var(--dark-main-color);
+  border-radius: 16px;
+  box-shadow: 0 0.38rem 0 0 var(--dark-main-color);
+  padding: 1.35rem 1.65rem 1.5rem;
+  text-align: center;
+  transition:
+    transform 0.3s var(--spring-ease),
+    box-shadow 0.3s var(--spring-ease);
+}
+
+.review-panel h2 {
+  margin-bottom: 0.55rem;
+  color: var(--title-color);
+}
+
+.review-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.65rem;
+  margin-top: 0.9rem;
+  width: 100%;
+}
+
+.review-actions a {
+  margin: 0;
+  background-color: #253366;
+  border-color: #8fa4ff;
+  box-shadow: 0 0.42rem 0 0 var(--dark-main-color);
+}
+
+/* Disclaimer */
+.disclaimer {
+  width: 95%;
+  max-width: 44rem;
+  text-align: center;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--main-color);
+  opacity: 0.72;
+  line-height: 1.5;
+  margin-top: -0.35rem;
+}
+
+/* Responsive */
+@media (max-width: 720px) {
+  .compare-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  #features,
+  #why,
+  #review {
+    width: 100%;
+  }
+
+  .hero-subtitle {
+    font-size: clamp(0.88rem, 3.6vw, 0.96rem);
+  }
+
+  #content .hero-review-strip {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.45rem 0.55rem;
+  }
+
+  .hero-review-text {
+    width: 100%;
+    text-align: center;
+  }
+
+  #content a.review-chip {
+    width: auto;
+    padding: 0.34rem 0.85rem;
+    font-size: 0.82rem;
+  }
+
+  .compare-card,
+  .review-panel {
+    padding: 1.1rem 1.15rem 1.25rem;
+    border-radius: 15px;
+  }
+
+  .review-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .review-actions a {
+    width: 100%;
+    max-width: 15.5rem;
+  }
+
+  .disclaimer {
+    width: 100%;
+    font-size: 0.78rem;
+  }
+}

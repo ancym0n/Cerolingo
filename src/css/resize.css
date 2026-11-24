@@ -89,13 +89,13 @@ li {
     left: calc(clamp(0.36rem, 1.8vw, 0.55rem) * -1 - 1px);
   }
 
-  #content > div:not(#stats) {
+  #content > div:not(#stats):not(.hero-review-strip) {
     flex-direction: column;
     align-items: stretch;
     gap: clamp(0.5rem, 1.4vh, 0.65rem);
   }
 
-  #content a:not(.stat-item) {
+  #content a:not(.stat-item):not(.review-chip) {
     width: 100%;
     margin: 0;
     padding: clamp(0.58rem, 1.7vh, 0.74rem) 1.2rem;
@@ -114,7 +114,7 @@ li {
     border-radius: 15px;
   }
 
-  a[href="privacy"],
+  #faq a[href="privacy"],
   .promo-links a,
   #back-home {
     width: 100%;
@@ -125,6 +125,15 @@ li {
     flex-direction: column;
     align-items: center;
     gap: clamp(0.5rem, 1.4vh, 0.65rem);
+  }
+
+  #credit,
+  #credit a {
+    font-size: 0.8rem;
+  }
+
+  #credit {
+    gap: 0.25rem 0.38rem;
   }
 }
 
@@ -169,11 +178,11 @@ li {
     line-height: 1.25rem;
   }
 
-  #content > div:not(#stats) {
+  #content > div:not(#stats):not(.hero-review-strip) {
     gap: 0.72rem;
   }
 
-  #content a:not(.stat-item) {
+  #content a:not(.stat-item):not(.review-chip) {
     padding: 0.78rem 1.4rem;
     font-size: 1.02rem;
     border-radius: 14px;
@@ -220,11 +229,11 @@ li {
     line-height: 1.1rem;
   }
 
-  #content > div:not(#stats) {
+  #content > div:not(#stats):not(.hero-review-strip) {
     gap: 0.45rem;
   }
 
-  #content a:not(.stat-item) {
+  #content a:not(.stat-item):not(.review-chip) {
     padding: 0.5rem 1rem;
     font-size: 0.9rem;
     border-radius: 12px;
@@ -259,13 +268,13 @@ li {
     gap: 0.6rem;
   }
 
-  #content > div:not(#stats) {
+  #content > div:not(#stats):not(.hero-review-strip) {
     flex-direction: row;
     flex-wrap: wrap;
     gap: 0.5rem;
   }
 
-  #content a:not(.stat-item) {
+  #content a:not(.stat-item):not(.review-chip) {
     width: auto;
     flex: 1 1 9rem;
     padding: 0.5rem 0.9rem;
