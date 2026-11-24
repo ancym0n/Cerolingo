@@ -1,13 +1,23 @@
+const CHROME_EXTENSION_ID = "apgkphplddmjkoogmoijendkdjaaeiii";
+const FIREFOX_ADDON_SLUG = "cerolingo";
+const GITHUB_REPO = "ancym0n/Cerolingo";
+
+const STATS_CACHE_KEY = "cerolingo:stats-v2";
+const STATS_CACHE_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
+const REQUEST_TIMEOUT_MS = 3200;
+
 function parseCount(raw) {
-  if (typeof raw === "number" && Number.isFinite(raw)) return Math.round(raw);
+  if (typeof raw === "number" && Number.isFinite(raw) && raw >= 0) {
+    return Math.round(raw);
+  }
   if (typeof raw !== "string") return null;
 
   const cleaned = raw.trim().toLowerCase().replace(/,/g, "");
-  const match = cleaned.match(/^([\d.]+)\s*([km])?/);
+  const match = cleaned.match(/^([\d.]+)\s*([km])?\+?$/);
   if (!match) return null;
 
   const num = parseFloat(match[1]);
-  if (!Number.isFinite(num)) return null;
+  if (!Number.isFinite(num) || num < 0) return null;
 
   if (match[2] === "k") return Math.round(num * 1000);
   if (match[2] === "m") return Math.round(num * 1000000);
@@ -20,7 +30,7 @@ function parseRating(raw) {
   }
   if (typeof raw !== "string") return null;
 
-  const match = raw.trim().match(/^(\d+(?:\.\d+)?)/);
+  const match = raw.trim().match(/^(\d+(?:\.\d+)?)(?:\s*\/\s*5)?/);
   if (!match) return null;
 
   const num = parseFloat(match[1]);
@@ -28,157 +38,331 @@ function parseRating(raw) {
   return Math.min(5, num);
 }
 
-async function fetchJson(url) {
-  const res = await fetch(url, { cache: "no-cache" });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+function parseVersionTag(raw) {
+  if (typeof raw !== "string") return null;
+  const match = raw.match(/v?(\d+\.\d+(?:\.\d+)?(?:-[\w.-]+)?)/i);
+  return match ? `v${match[1]}` : null;
+}
+
+async function fetchWithTimeout(url, timeoutMs = REQUEST_TIMEOUT_MS, init = {}) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const res = await fetch(url, { ...init, signal: controller.signal });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return res;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function fetchJson(url, timeoutMs = REQUEST_TIMEOUT_MS) {
+  const res = await fetchWithTimeout(url, timeoutMs);
   return res.json();
+}
+
+async function fetchShieldsValue(url, timeoutMs = REQUEST_TIMEOUT_MS) {
+  const data = await fetchJson(url, timeoutMs);
+  if (!data || data.isError) return null;
+  const val = data.value ?? data.message;
+  if (typeof val !== "string") return null;
+  if (
+    /invalid|not found|inaccessible|unparseable|unavailable|error|unknown/i.test(
+      val,
+    )
+  ) {
+    return null;
+  }
+  return val.trim();
+}
+
+async function fetchBadgenValue(url, timeoutMs = REQUEST_TIMEOUT_MS) {
+  const res = await fetchWithTimeout(url, timeoutMs);
+  const svg = await res.text();
+  const titleMatch =
+    svg.match(/<title>([^<]+)<\/title>/i) ||
+    svg.match(/aria-label="([^"]+)"/i);
+  if (!titleMatch) return null;
+  const raw = titleMatch[1];
+  const colonIdx = raw.indexOf(":");
+  const val = (colonIdx >= 0 ? raw.slice(colonIdx + 1) : raw).trim();
+  if (!val || /unknown|not found|error|invalid|n\/a/i.test(val)) return null;
+  return val;
+}
+
+// Return the first non-null result from parallel tasks
+function raceValid(tasks) {
+  if (!tasks.length) return Promise.resolve(null);
+  return new Promise((resolve) => {
+    let remaining = tasks.length;
+    let settled = false;
+
+    const done = (val) => {
+      if (settled) return;
+      if (val !== null && val !== undefined) {
+        settled = true;
+        resolve(val);
+        return;
+      }
+      remaining -= 1;
+      if (remaining === 0) {
+        settled = true;
+        resolve(null);
+      }
+    };
+
+    for (const task of tasks) {
+      Promise.resolve()
+        .then(task)
+        .then(done, () => done(null));
+    }
+  });
 }
 
 function setVersionText(rawTag) {
   const versionEl = document.getElementById("version");
-  if (!versionEl || !rawTag) return;
-  const tag = rawTag.startsWith("v") ? rawTag : `v${rawTag}`;
+  const tag = parseVersionTag(rawTag);
+  if (!versionEl || !tag) return;
   versionEl.textContent = tag;
 }
 
-async function fetchGitHubStats() {
-  let downloads = 0;
-  let stars = null;
-  let foundReleases = false;
+function readCachedStats() {
+  try {
+    const raw = localStorage.getItem(STATS_CACHE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (
+      !parsed ||
+      typeof parsed !== "object" ||
+      typeof parsed.at !== "number" ||
+      Date.now() - parsed.at > STATS_CACHE_MAX_AGE_MS
+    ) {
+      return null;
+    }
+    return parsed.data || null;
+  } catch {
+    return null;
+  }
+}
 
-  const [releasesRes, repoRes] = await Promise.allSettled([
-    fetchJson(
-      "https://api.github.com/repos/ancym0n/Cerolingo/releases?per_page=100",
-    ),
-    fetchJson("https://api.github.com/repos/ancym0n/Cerolingo"),
+function writeCachedStats(data) {
+  try {
+    localStorage.setItem(
+      STATS_CACHE_KEY,
+      JSON.stringify({ data, at: Date.now() }),
+    );
+  } catch {
+    /* ignore storage quota / privacy mode errors */
+  }
+}
+
+async function fetchGitHubStats() {
+  const apiReleasesPromise = fetchJson(
+    `https://api.github.com/repos/${GITHUB_REPO}/releases?per_page=100`,
+    2800,
+  ).catch(() => null);
+
+  const apiRepoPromise = fetchJson(
+    `https://api.github.com/repos/${GITHUB_REPO}`,
+    2800,
+  ).catch(() => null);
+
+  const versionPromise = raceValid([
+    async () => {
+      const releases = await apiReleasesPromise;
+      if (Array.isArray(releases) && releases[0]?.tag_name) {
+        return parseVersionTag(releases[0].tag_name);
+      }
+      return null;
+    },
+    async () =>
+      parseVersionTag(
+        await fetchShieldsValue(
+          `https://img.shields.io/github/v/release/${GITHUB_REPO}.json`,
+        ),
+      ),
+    async () =>
+      parseVersionTag(
+        await fetchBadgenValue(
+          `https://badgen.net/github/release/${GITHUB_REPO}`,
+        ),
+      ),
   ]);
 
-  if (
-    releasesRes.status === "fulfilled" &&
-    Array.isArray(releasesRes.value) &&
-    releasesRes.value.length > 0
-  ) {
-    const releases = releasesRes.value;
-    foundReleases = true;
-    if (releases[0]?.tag_name) {
-      setVersionText(releases[0].tag_name);
-    }
-    for (const rel of releases) {
-      if (Array.isArray(rel?.assets)) {
-        for (const asset of rel.assets) {
-          if (typeof asset?.download_count === "number") {
-            downloads += asset.download_count;
+  const downloadsPromise = raceValid([
+    async () => {
+      const releases = await apiReleasesPromise;
+      if (!Array.isArray(releases) || releases.length === 0) return null;
+      let total = 0;
+      for (const rel of releases) {
+        if (Array.isArray(rel?.assets)) {
+          for (const asset of rel.assets) {
+            if (typeof asset?.download_count === "number") {
+              total += asset.download_count;
+            }
           }
         }
       }
-    }
-  }
+      return total;
+    },
+    async () =>
+      parseCount(
+        await fetchShieldsValue(
+          `https://img.shields.io/github/downloads/${GITHUB_REPO}/total.json`,
+        ),
+      ),
+  ]);
 
-  if (
-    repoRes.status === "fulfilled" &&
-    typeof repoRes.value?.stargazers_count === "number"
-  ) {
-    stars = repoRes.value.stargazers_count;
-  }
+  const starsPromise = raceValid([
+    async () => {
+      const repo = await apiRepoPromise;
+      return typeof repo?.stargazers_count === "number"
+        ? repo.stargazers_count
+        : null;
+    },
+    async () =>
+      parseCount(
+        await fetchShieldsValue(
+          `https://img.shields.io/github/stars/${GITHUB_REPO}.json`,
+        ),
+      ),
+    async () =>
+      parseCount(
+        await fetchBadgenValue(
+          `https://badgen.net/github/stars/${GITHUB_REPO}`,
+        ),
+      ),
+  ]);
 
-  if (!foundReleases) {
-    try {
-      const badge = await fetchJson(
-        "https://img.shields.io/github/v/release/ancym0n/Cerolingo.json",
+  const [version, downloads, stars] = await Promise.all([
+    versionPromise,
+    downloadsPromise,
+    starsPromise,
+  ]);
+
+  if (version) setVersionText(version);
+  return { version, downloads, stars };
+}
+
+async function fetchChromeUsersOnce(timeoutMs = REQUEST_TIMEOUT_MS) {
+  return raceValid([
+    async () => {
+      const val = await fetchShieldsValue(
+        `https://img.shields.io/chrome-web-store/users/${CHROME_EXTENSION_ID}.json`,
+        timeoutMs,
       );
-      if (badge?.value && !badge.value.includes("invalid")) {
-        setVersionText(badge.value);
-      }
-    } catch (_) {}
-  }
-
-  if (downloads === 0) {
-    try {
-      const dlBadge = await fetchJson(
-        "https://img.shields.io/github/downloads/ancym0n/Cerolingo/total.json",
+      const count = parseCount(val);
+      return count !== null && count > 0 ? count : null;
+    },
+    async () => {
+      const val = await fetchBadgenValue(
+        `https://badgen.net/chrome-web-store/users/${CHROME_EXTENSION_ID}`,
+        timeoutMs,
       );
-      const parsed = parseCount(dlBadge?.value);
-      if (parsed !== null) downloads = parsed;
-    } catch (_) {}
-  }
+      const count = parseCount(val);
+      return count !== null && count > 0 ? count : null;
+    },
+  ]);
+}
 
-  if (stars === null) {
-    try {
-      const starBadge = await fetchJson(
-        "https://img.shields.io/github/stars/ancym0n/Cerolingo.json",
-      );
-      const parsed = parseCount(starBadge?.value);
-      if (parsed !== null) stars = parsed;
-    } catch (_) {}
-  }
-
-  return { downloads, stars };
+async function fetchChromeRatingOnce(timeoutMs = REQUEST_TIMEOUT_MS) {
+  return raceValid([
+    async () =>
+      parseRating(
+        await fetchShieldsValue(
+          `https://img.shields.io/chrome-web-store/rating/${CHROME_EXTENSION_ID}.json`,
+          timeoutMs,
+        ),
+      ),
+    async () =>
+      parseRating(
+        await fetchBadgenValue(
+          `https://badgen.net/chrome-web-store/rating/${CHROME_EXTENSION_ID}`,
+          timeoutMs,
+        ),
+      ),
+  ]);
 }
 
 async function fetchChromeStats() {
-  let users = 0;
-  let downloads = 0;
-  let rating = null;
-
-  const [usersRes, ratingRes] = await Promise.allSettled([
-    fetchJson(
-      "https://img.shields.io/chrome-web-store/users/apgkphplddmjkoogmoijendkdjaaeiii.json",
-    ),
-    fetchJson(
-      "https://img.shields.io/chrome-web-store/rating/apgkphplddmjkoogmoijendkdjaaeiii.json",
-    ),
+  const [users, rating] = await Promise.all([
+    fetchChromeUsersOnce(),
+    fetchChromeRatingOnce(),
   ]);
-
-  if (usersRes.status === "fulfilled") {
-    const count = parseCount(usersRes.value?.value);
-    if (count !== null) {
-      users = count;
-      downloads = count;
-    }
-  }
-
-  if (ratingRes.status === "fulfilled") {
-    const parsedRating = parseRating(ratingRes.value?.value);
-    if (parsedRating !== null) {
-      rating = parsedRating;
-    }
-  }
-
-  try {
-    const data = await fetchJson(
-      "https://chrome-stats.com/api/detail?id=apgkphplddmjkoogmoijendkdjaaeiii",
-    );
-    const uCount = parseCount(data?.userCount ?? data?.users);
-    const dCount = parseCount(
-      data?.downloadCount ?? data?.downloads ?? data?.installCount,
-    );
-    const rVal = parseRating(data?.ratingValue ?? data?.rating);
-    if (uCount !== null && uCount > users) users = uCount;
-    if (dCount !== null && dCount > downloads) downloads = dCount;
-    if (rVal !== null && rating === null) rating = rVal;
-  } catch (_) {}
 
   return {
     users,
-    downloads: Math.max(downloads, users),
+    downloads: users,
     rating,
   };
 }
 
+async function fetchFirefoxUsersBackup(timeoutMs = REQUEST_TIMEOUT_MS) {
+  return raceValid([
+    async () =>
+      parseCount(
+        await fetchShieldsValue(
+          `https://img.shields.io/amo/users/${FIREFOX_ADDON_SLUG}.json`,
+          timeoutMs,
+        ),
+      ),
+    async () =>
+      parseCount(
+        await fetchBadgenValue(
+          `https://badgen.net/amo/users/${FIREFOX_ADDON_SLUG}`,
+          timeoutMs,
+        ),
+      ),
+  ]);
+}
+
+async function fetchFirefoxRatingBackup(timeoutMs = REQUEST_TIMEOUT_MS) {
+  return raceValid([
+    async () =>
+      parseRating(
+        await fetchShieldsValue(
+          `https://img.shields.io/amo/rating/${FIREFOX_ADDON_SLUG}.json`,
+          timeoutMs,
+        ),
+      ),
+    async () =>
+      parseRating(
+        await fetchBadgenValue(
+          `https://badgen.net/amo/rating/${FIREFOX_ADDON_SLUG}`,
+          timeoutMs,
+        ),
+      ),
+  ]);
+}
+
+async function fetchFirefoxWeeklyBackup(timeoutMs = REQUEST_TIMEOUT_MS) {
+  return raceValid([
+    async () => {
+      const val = await fetchShieldsValue(
+        `https://img.shields.io/amo/dw/${FIREFOX_ADDON_SLUG}.json`,
+        timeoutMs,
+      );
+      if (!val) return null;
+      return parseCount(val.replace(/\/week/i, ""));
+    },
+  ]);
+}
+
 async function fetchFirefoxStats() {
-  let users = 0;
-  let weeklyDownloads = 0;
+  let users = null;
+  let weeklyDownloads = null;
   let rating = null;
 
   try {
     const data = await fetchJson(
-      "https://addons.mozilla.org/api/v5/addons/addon/cerolingo/",
+      `https://addons.mozilla.org/api/v5/addons/addon/${FIREFOX_ADDON_SLUG}/`,
+      2600,
     );
     if (typeof data?.average_daily_users === "number") {
-      users = data.average_daily_users;
+      users = Math.round(data.average_daily_users);
     }
     if (typeof data?.weekly_downloads === "number") {
-      weeklyDownloads = data.weekly_downloads;
+      weeklyDownloads = Math.round(data.weekly_downloads);
     }
     const avgRating = parseRating(data?.ratings?.average);
     if (avgRating !== null) {
@@ -186,41 +370,25 @@ async function fetchFirefoxStats() {
     }
   } catch (_) {}
 
-  if (users === 0) {
-    try {
-      const data = await fetchJson(
-        "https://img.shields.io/amo/users/cerolingo.json",
-      );
-      const count = parseCount(data?.value);
-      if (count !== null) users = count;
-    } catch (_) {}
-  }
+  // Fetch backups only for missing fields
+  const [backupUsers, backupWeekly, backupRating] = await Promise.all([
+    users === null ? fetchFirefoxUsersBackup() : Promise.resolve(users),
+    weeklyDownloads === null
+      ? fetchFirefoxWeeklyBackup()
+      : Promise.resolve(weeklyDownloads),
+    rating === null ? fetchFirefoxRatingBackup() : Promise.resolve(rating),
+  ]);
 
-  if (weeklyDownloads === 0) {
-    try {
-      const data = await fetchJson(
-        "https://img.shields.io/amo/dw/cerolingo.json",
-      );
-      const count = parseCount(data?.value);
-      if (count !== null) weeklyDownloads = count;
-    } catch (_) {}
-  }
+  users = backupUsers;
+  weeklyDownloads = backupWeekly;
+  rating = backupRating;
 
-  if (rating === null) {
-    try {
-      const data = await fetchJson(
-        "https://img.shields.io/amo/rating/cerolingo.json",
-      );
-      const parsedRating = parseRating(data?.value);
-      if (parsedRating !== null) rating = parsedRating;
-    } catch (_) {}
-  }
+  const downloads =
+    users !== null
+      ? Math.max(users + (weeklyDownloads || 0), users)
+      : weeklyDownloads;
 
-  return {
-    users,
-    downloads: Math.max(users + weeklyDownloads, users),
-    rating,
-  };
+  return { users, downloads, rating };
 }
 
 function updateStatDividers() {
@@ -248,66 +416,123 @@ function updateStatDividers() {
   if (realItems.length > 0) markRowStarts(realItems);
 }
 
-async function loadAllStats() {
-  const statsContainer = document.getElementById("stats");
+function mergeStatsState(base, incoming) {
+  const next = { ...(base || {}) };
+  for (const [key, val] of Object.entries(incoming || {})) {
+    if (val !== null && val !== undefined) {
+      next[key] = val;
+    }
+  }
+  return next;
+}
+
+function buildPendingItems(state) {
   const activeUsersEl = document.getElementById("active-users");
   const totalDownloadsEl = document.getElementById("total-downloads");
   const githubStarsEl = document.getElementById("github-stars");
   const chromeRatingEl = document.getElementById("chrome-rating");
   const firefoxRatingEl = document.getElementById("firefox-rating");
 
-  const [github, chrome, firefox] = await Promise.all([
-    fetchGitHubStats(),
-    fetchChromeStats(),
-    fetchFirefoxStats(),
-  ]);
+  const chromeUsers =
+    typeof state.chromeUsers === "number" ? state.chromeUsers : null;
+  const firefoxUsers =
+    typeof state.firefoxUsers === "number" ? state.firefoxUsers : null;
+  const ghDownloads =
+    typeof state.ghDownloads === "number" ? state.ghDownloads : null;
+  const chromeDownloads =
+    typeof state.chromeDownloads === "number"
+      ? state.chromeDownloads
+      : chromeUsers;
+  const firefoxDownloads =
+    typeof state.firefoxDownloads === "number"
+      ? state.firefoxDownloads
+      : firefoxUsers;
 
-  if (!statsContainer) return;
-
-  const totalActiveUsers = (chrome.users || 0) + (firefox.users || 0);
+  const totalActiveUsers = (chromeUsers || 0) + (firefoxUsers || 0);
   const totalDownloads =
-    (github.downloads || 0) +
-    (chrome.downloads || 0) +
-    (firefox.downloads || 0);
+    (ghDownloads || 0) + (chromeDownloads || 0) + (firefoxDownloads || 0);
 
-  let hasAnyStat = false;
   const pending = [];
 
-  if (activeUsersEl && totalActiveUsers > 0) {
-    pending.push({ el: activeUsersEl, text: `Users: ${totalActiveUsers.toLocaleString()}` });
-    hasAnyStat = true;
+  if (
+    activeUsersEl &&
+    (chromeUsers !== null || firefoxUsers !== null) &&
+    totalActiveUsers > 0
+  ) {
+    pending.push({
+      el: activeUsersEl,
+      text: `Users: ${totalActiveUsers.toLocaleString()}`,
+    });
   }
 
-  if (totalDownloadsEl && totalDownloads > 0) {
-    pending.push({ el: totalDownloadsEl, text: `Downloads: ${totalDownloads.toLocaleString()}` });
-    hasAnyStat = true;
+  if (
+    totalDownloadsEl &&
+    (ghDownloads !== null ||
+      chromeDownloads !== null ||
+      firefoxDownloads !== null) &&
+    totalDownloads > 0
+  ) {
+    pending.push({
+      el: totalDownloadsEl,
+      text: `Downloads: ${totalDownloads.toLocaleString()}`,
+    });
   }
 
-  if (githubStarsEl && typeof github.stars === "number" && github.stars >= 0) {
-    pending.push({ el: githubStarsEl, text: `GitHub: ★ ${github.stars.toLocaleString()}` });
-    hasAnyStat = true;
+  if (
+    githubStarsEl &&
+    typeof state.ghStars === "number" &&
+    state.ghStars >= 0
+  ) {
+    pending.push({
+      el: githubStarsEl,
+      text: `GitHub: ★ ${state.ghStars.toLocaleString()}`,
+    });
   }
 
-  if (chromeRatingEl && typeof chrome.rating === "number") {
-    pending.push({ el: chromeRatingEl, text: `Chrome: ★ ${chrome.rating.toFixed(1)}` });
-    hasAnyStat = true;
+  if (chromeRatingEl && typeof state.chromeRating === "number") {
+    pending.push({
+      el: chromeRatingEl,
+      text: `Chrome: ★ ${state.chromeRating.toFixed(1)}`,
+    });
   }
 
-  if (firefoxRatingEl && typeof firefox.rating === "number") {
-    pending.push({ el: firefoxRatingEl, text: `Firefox: ★ ${firefox.rating.toFixed(1)}` });
-    hasAnyStat = true;
+  if (firefoxRatingEl && typeof state.firefoxRating === "number") {
+    pending.push({
+      el: firefoxRatingEl,
+      text: `Firefox: ★ ${state.firefoxRating.toFixed(1)}`,
+    });
+  }
+
+  return pending;
+}
+
+function renderStatsBar(state, { isFinal = false } = {}) {
+  const statsContainer = document.getElementById("stats");
+  if (!statsContainer || statsContainer.hidden) return;
+
+  const pending = buildPendingItems(state);
+  const hasAnyStat = pending.length > 0;
+
+  // Update values in place after initial render
+  if (statsContainer.classList.contains("is-loaded")) {
+    if (!hasAnyStat) return;
+    let changed = false;
+    for (const { el, text } of pending) {
+      if (el.textContent !== text || el.hidden) {
+        el.textContent = text;
+        el.hidden = false;
+        changed = true;
+      }
+    }
+    if (changed) updateStatDividers();
+    return;
   }
 
   const STATS_RESIZE_MS = 450;
-  // If the loading screen is still covering the page, swap instantly:
-  // nobody can see it, and the items then fade in with the page entrance.
   const reduceMotion =
     window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
     document.documentElement.classList.contains("is-booting");
 
-  // Swap skeleton -> content while animating the box between its old and
-  // new size, so nothing below it jumps.
-  // Layout size, unaffected by the #content load-in transform
   const measure = () => {
     const cs = getComputedStyle(statsContainer);
     return { width: parseFloat(cs.width), height: parseFloat(cs.height) };
@@ -330,7 +555,7 @@ async function loadAllStats() {
     statsContainer.classList.add("is-resizing");
     statsContainer.style.width = `${from.width}px`;
     statsContainer.style.height = `${from.height}px`;
-    void statsContainer.offsetWidth; // commit starting size
+    void statsContainer.offsetWidth;
     statsContainer.style.width = `${to.width}px`;
     statsContainer.style.height = `${to.height}px`;
 
@@ -350,15 +575,12 @@ async function loadAllStats() {
           el.hidden = false;
         }
         statsContainer.removeAttribute("aria-busy");
-        // Skeletons switch to an overlay (out of flow) so the box can size
-        // to the real items while the shimmer stays visible until the end.
         statsContainer.classList.add("is-swapping");
         statsContainer.classList.remove("is-loading");
         updateStatDividers();
       },
       () => {
         updateStatDividers();
-        // Crossfade: skeleton overlay fades out as the real items fade in
         statsContainer.classList.add("is-loaded");
         setTimeout(
           () => statsContainer.classList.remove("is-swapping"),
@@ -366,9 +588,7 @@ async function loadAllStats() {
         );
       },
     );
-  } else {
-    // Nothing to show: smoothly collapse the reserved space (including the
-    // grid gap above it), then remove it from layout.
+  } else if (isFinal) {
     statsContainer.removeAttribute("aria-busy");
     const gap = parseFloat(
       getComputedStyle(statsContainer.parentElement).rowGap || "0",
@@ -395,6 +615,95 @@ async function loadAllStats() {
   }
 }
 
+async function loadAllStats() {
+  const statsContainer = document.getElementById("stats");
+  let state = readCachedStats() || {};
+
+  if (state.version) {
+    setVersionText(state.version);
+  }
+
+  // Render cached stats immediately while refreshing in the background
+  const hasCachedRender =
+    statsContainer &&
+    !statsContainer.hidden &&
+    buildPendingItems(state).length > 0;
+  if (hasCachedRender) {
+    renderStatsBar(state);
+  }
+
+  const refreshLive = async () => {
+    const [github, chrome, firefox] = await Promise.all([
+      fetchGitHubStats(),
+      fetchChromeStats(),
+      fetchFirefoxStats(),
+    ]);
+
+    state = mergeStatsState(state, {
+      version: github.version,
+      ghDownloads: github.downloads,
+      ghStars: github.stars,
+      chromeUsers: chrome.users,
+      chromeDownloads: chrome.downloads,
+      chromeRating: chrome.rating,
+      firefoxUsers: firefox.users,
+      firefoxDownloads: firefox.downloads,
+      firefoxRating: firefox.rating,
+    });
+
+    if (state.version) setVersionText(state.version);
+
+    const needsChromeUsersRetry = state.chromeUsers === null || state.chromeUsers === undefined;
+    const needsChromeRatingRetry = state.chromeRating === null || state.chromeRating === undefined;
+    const needsFirefoxUsersRetry = state.firefoxUsers === null || state.firefoxUsers === undefined;
+    const needsFirefoxRatingRetry = state.firefoxRating === null || state.firefoxRating === undefined;
+    const hasMissingStoreStat =
+      needsChromeUsersRetry ||
+      needsChromeRatingRetry ||
+      needsFirefoxUsersRetry ||
+      needsFirefoxRatingRetry;
+
+    if (!hasMissingStoreStat || hasCachedRender) {
+      renderStatsBar(state, { isFinal: !hasMissingStoreStat });
+    }
+
+    if (hasMissingStoreStat) {
+      // Retry missing store stats
+      await wait(650);
+      const [rChromeUsers, rChromeRating, rFirefoxUsers, rFirefoxRating] =
+        await Promise.all([
+          needsChromeUsersRetry ? fetchChromeUsersOnce(4500) : null,
+          needsChromeRatingRetry ? fetchChromeRatingOnce(4500) : null,
+          needsFirefoxUsersRetry ? fetchFirefoxUsersBackup(4500) : null,
+          needsFirefoxRatingRetry ? fetchFirefoxRatingBackup(4500) : null,
+        ]);
+
+      state = mergeStatsState(state, {
+        chromeUsers: rChromeUsers,
+        chromeDownloads: rChromeUsers,
+        chromeRating: rChromeRating,
+        firefoxUsers: rFirefoxUsers,
+        firefoxDownloads:
+          rFirefoxUsers !== null ? rFirefoxUsers : null,
+        firefoxRating: rFirefoxRating,
+      });
+    }
+
+    renderStatsBar(state, { isFinal: true });
+
+    if (buildPendingItems(state).length > 0 || state.version) {
+      writeCachedStats(state);
+    }
+  };
+
+  // Do not block initial reveal if cached stats are already visible
+  const livePromise = refreshLive();
+  if (hasCachedRender) {
+    return;
+  }
+  await livePromise;
+}
+
 // ---------- Privacy policy "last updated" date ----------
 // Uses the latest commit on the `page` branch (any file, not just the policy).
 const LAST_UPDATED_CACHE_KEY = "cerolingo:page-last-commit";
@@ -413,7 +722,7 @@ async function fetchPageLastCommitDate() {
   }
 
   const commits = await fetchJson(
-    "https://api.github.com/repos/ancym0n/Cerolingo/commits?sha=page&per_page=1",
+    `https://api.github.com/repos/${GITHUB_REPO}/commits?sha=page&per_page=1`,
   );
   const commit = Array.isArray(commits) ? commits[0] : null;
   const date =
@@ -441,8 +750,6 @@ async function loadLastUpdated() {
     fetchVisitorTimeZone(),
   ]);
 
-  // Always show a concrete timestamp: fall back to the last known commit
-  // baked into the HTML if GitHub can't be reached.
   const iso =
     (commitRes.status === "fulfilled" && commitRes.value) ||
     dateEl.dataset.fallback ||
@@ -465,7 +772,6 @@ async function loadLastUpdated() {
   dateEl.classList.add("is-ready");
 }
 
-// "HH:MM:SS DD.MM.YYYY" in the given IANA time zone
 function formatTimestamp(date, timeZone) {
   let parts;
   try {
@@ -480,15 +786,12 @@ function formatTimestamp(date, timeZone) {
       year: "numeric",
     }).formatToParts(date);
   } catch {
-    // Unknown time zone id: use the device's own
     return formatTimestamp(date, undefined);
   }
   const p = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
   return `${p.hour}:${p.minute}:${p.second} ${p.day}.${p.month}.${p.year}`;
 }
 
-// Visitor time zone from their IP location (cached per session).
-// Falls back to the device time zone if the lookup fails.
 const TZ_CACHE_KEY = "cerolingo:visitor-tz";
 
 async function fetchVisitorTimeZone() {
@@ -500,9 +803,11 @@ async function fetchVisitorTimeZone() {
   }
 
   const lookups = [
-    () => fetchJson("https://ipapi.co/json/").then((d) => d.timezone),
+    () => fetchJson("https://ipapi.co/json/", 2500).then((d) => d.timezone),
     () =>
-      fetchJson("https://get.geojs.io/v1/ip/geo.json").then((d) => d.timezone),
+      fetchJson("https://get.geojs.io/v1/ip/geo.json", 2500).then(
+        (d) => d.timezone,
+      ),
   ];
 
   for (const lookup of lookups) {
@@ -524,9 +829,9 @@ async function fetchVisitorTimeZone() {
 }
 
 // ---------- Loading screen ----------
-const LOADER_MIN_MS = 350; // avoid a jarring flash on fast connections
-const LOADER_MAX_MS = 1500; // slow APIs fall back to the stats skeleton
-const LOADER_EXIT_MS = 380;
+const LOADER_MIN_MS = 320;
+const LOADER_MAX_MS = 1400;
+const LOADER_EXIT_MS = 360;
 const loaderStart = performance.now();
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -540,7 +845,6 @@ function trackLoadTasks(tasks) {
   let done = 0;
   const bump = () => {
     done += 1;
-    // Keep a little headroom so the bar finishes on the final reveal
     setLoaderProgress(0.12 + (done / tasks.length) * 0.78);
   };
   return Promise.allSettled(tasks.map((t) => Promise.resolve(t).finally(bump)));
@@ -558,9 +862,8 @@ async function hideLoader() {
   if (elapsed < LOADER_MIN_MS) await wait(LOADER_MIN_MS - elapsed);
 
   setLoaderProgress(1);
-  await wait(170); // let the bar visibly reach the end
+  await wait(160);
 
-  // Hand off: loader fades/lifts away while the page entrance plays beneath
   loader.classList.add("is-leaving");
   loader.setAttribute("aria-hidden", "true");
   root.classList.remove("is-booting");
@@ -570,13 +873,14 @@ async function hideLoader() {
 
 function setupScrollCue() {
   const cueWrap = document.getElementById("scroll-cue-wrap");
-  const faq = document.getElementById("faq");
-  if (!cueWrap || !faq) return;
+  const target =
+    document.getElementById("features") || document.getElementById("faq");
+  if (!cueWrap || !target) return;
 
   const update = () => {
-    const faqTop = faq.getBoundingClientRect().top;
-    const isFaqVisible = faqTop <= window.innerHeight - 36;
-    cueWrap.classList.toggle("is-hidden", isFaqVisible);
+    const targetTop = target.getBoundingClientRect().top;
+    const isTargetVisible = targetTop <= window.innerHeight - 36;
+    cueWrap.classList.toggle("is-hidden", isTargetVisible);
   };
 
   window.addEventListener("scroll", update, { passive: true });
@@ -599,11 +903,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const lastUpdated = loadLastUpdated();
 
   const tasks = [pageLoaded, fontsReady];
-  // Keep the loader up until the stats bar is ready (index page only)
   if (document.getElementById("stats")?.classList.contains("is-loading")) {
     tasks.push(stats);
   }
-  // Privacy page: keep the loader up until the last-updated date is in
   if (document.getElementById("last-updated")) tasks.push(lastUpdated);
 
   Promise.race([trackLoadTasks(tasks), wait(LOADER_MAX_MS)]).then(hideLoader);
